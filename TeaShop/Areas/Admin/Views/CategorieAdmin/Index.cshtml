@@ -1,0 +1,187 @@
+﻿@{
+    ViewBag.Title = "Categories";
+    var newCategoryID = ViewBag.NewCategoryID as string;
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutPage.cshtml";
+}
+
+@model IEnumerable<TeaShop.ViewModel.CateViewModel>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Categories</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .search-box {
+            width: 300px;
+            display: flex;
+            align-items: center;
+            background-color: #f1f1f1;
+            border-radius: 20px;
+            padding: 5px 10px;
+        }
+
+            .search-box input {
+                border: none;
+                background: none;
+                outline: none;
+                padding: 5px 10px;
+                width: 100%;
+            }
+
+            .search-box i {
+                color: #999;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Search Form -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <div class="search-box">
+                    @using (Html.BeginForm("Index", "CategorieAdmin", FormMethod.Get, new { @class = "form-inline" }))
+                    {
+                        <input type="text" id="searchCategoryName" name="CategoryName" placeholder="Search..." />
+                        <button type="submit" style="border: none; background: none; padding: 0;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#createModal">Add New Category</button>
+            </div>
+        </div>
+
+        <!-- Category Table -->
+        <table class="table text-center table-striped">
+            <thead>
+                <tr>
+                    <th>CategoryID</th>
+                    <th>CategoryName</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.CategoryID</td>
+                        <td>@item.CategoryName</td>
+                        <td>@item.Description</td>
+                        <td>
+                            <button class="btn btn-warning" data-toggle="modal" data-target="#editModal_@item.CategoryID">Edit</button>
+                            <button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal_@item.CategoryID">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- Create Modal -->
+    <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createModalLabel">Add New Category</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @using (Html.BeginForm("Create", "CategorieAdmin", FormMethod.Post, new { @class = "form-horizontal" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group">
+                            <label for="CategoryName" class="control-label">Tên Danh Mục</label>
+                            <input type="text" name="CategoryName" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="Description" class="control-label">Mô Tả</label>
+                            <textarea name="Description" class="form-control"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Thêm Mới</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    @foreach (var item in Model)
+    {
+        <div class="modal fade" id="editModal_@item.CategoryID" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel_@item.CategoryID">Edit Category</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    @using (Html.BeginForm("Edit", "CategorieAdmin", FormMethod.Post, new { @class = "form-horizontal" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("CategoryID", item.CategoryID)
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="CategoryName" class="control-label">Category Name</label>
+                                <input type="text" name="CategoryName" class="form-control" value="@item.CategoryName" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="Description" class="control-label">Description</label>
+                                <textarea name="Description" class="form-control">@item.Description</textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Delete Modal -->
+    @foreach (var item in Model)
+    {
+        <div class="modal fade" id="deleteModal_@item.CategoryID" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel_@item.CategoryID" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel_@item.CategoryID">Delete Category</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this category: @item.CategoryName?</p>
+                    </div>
+                    <div class="modal-footer">
+                        @using (Html.BeginForm("DeleteConfirmed", "CategorieAdmin", FormMethod.Post, new { id = item.CategoryID }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("CategoryID", item.CategoryID)
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        }
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+﻿@model IEnumerable<TeaShop.Models.CartModel>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Meta tags and other links -->
+    <style>
+        .table td, .table th {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table img {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    @if (Session["CustomerID"] != null)
+                    {
+                        <h5 class="modal-title" id="cartModalLabel">Giỏ hàng của bạn @Session["CustomerName"]</h5>
+                    }
+                    else
+                    {
+                        <h5 class="modal-title" id="cartModalLabel">Bạn cần đăng nhập để xem giỏ hàng</h5>
+                    }
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @if (Session["CustomerID"] != null)
+                    {
+                        <form>
+                            <table class="table text-center">
+                                <tbody>
+                                    @foreach (var cart in Model)
+                                    {
+                                        foreach (var detail in cart.CartDetails)
+                                        {
+                                            <tr id="cartDetail_@detail.CartDetailID">
+                                                <td>
+                                                    @{
+                                                        string relativeImagePath = "";
+                                                        string imagePath = Path.Combine(detail.Product.ImageURL);
+
+                                                        relativeImagePath = "~/Images/" + Path.GetFileName(imagePath).Replace("\\", "/");
+
+                                                    }
+                                                    <img src="@Url.Content(relativeImagePath)" alt="Product Image" style="max-width:100px;max-height:100px;" />
+
+                                                </td>
+                                                <td>@Html.DisplayFor(modelItem => detail.Product.ProductName)</td>
+                                                <td>@Html.DisplayFor(modelItem => detail.Size)</td>
+                                                <td>@Html.DisplayFor(modelItem => detail.Quantity)</td>
+                                                <td>@string.Format("{0:N0}đ", detail.Price)</td>
+                                                <td>@string.Format("{0:N0}đ", detail.Quantity * detail.Price)</td>
+                                                <td>
+                                                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#editModal_@detail.CartDetailID">Cập nhật</button>
+                                                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#deleteModal_@detail.CartDetailID">Loại bỏ</button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                            <div id="cartSummary">
+                                <p>Tổng tiền: @string.Format("{0:N0}đ", Model.Sum(cart => cart.CartDetails.Sum(cd => cd.Price * cd.Quantity)))</p>
+                            </div>
+                        </form>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Quay lại</button>
+                            <a href="@Url.Action("CreatePayment", "Payment")" class="btn btn-success">Thanh Toán</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-12 text-center">
+                            <h5 class="modal-title">Yêu cầu đăng nhập!</h5>
+                            <p>Bạn cần đăng nhập để xem giỏ hàng.</p>
+                            @Html.ActionLink("Đăng nhập", "Login", "Account", null, new { @class = "btn btn-primary" })
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @foreach (var cart in Model)
+    {
+        foreach (var detail in cart.CartDetails)
+        {
+            <!-- Edit Modal -->
+            <div class="modal fade" id="editModal_@detail.CartDetailID" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModalLabel">Cập nhật sản phẩm</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @using (Html.BeginForm("EditItem", "Cart", FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("CartDetailID", detail.CartDetailID)
+                                @Html.Hidden("Price", detail.Price, new { id = "pricePerUnit_" + detail.CartDetailID })
+                                <div class="form-group">
+                                    <label for="Size">Kích cỡ:</label>
+                                    <div id="Size">
+                                        <label><input type="radio" name="Size" id="size" value="Hot" @(detail.Size == "Hot" ? "checked" : "")> Hot</label>
+                                        <label><input type="radio" name="Size" id="size" value="Ice regular size" @(detail.Size == "Ice regular size" ? "checked" : "")> Ice regular size</label>
+                                        <label><input type="radio" name="Size" id="size" value="Big size ice" @(detail.Size == "Big size ice" ? "checked" : "")> Big size ice</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Quantity">Số lượng:</label>
+                                    <input type="number" class="form-control" name="Quantity" value="@detail.Quantity" min="1" id="quantityInput_@detail.CartDetailID" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="TotalPrice">Tổng tiền:</label>
+                                    <input type="text" class="form-control" name="TotalPrice" id="totalPrice_@detail.CartDetailID" value="@string.Format("{0:N0}đ", detail.Quantity * detail.Price)" readonly="readonly" />
+                                </div>
+                                <button type="submit" class="btn btn-success">Cập nhật</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delete Modal -->
+            <div class="modal fade" id="deleteModal_@detail.CartDetailID" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng không?</p>
+                        </div>
+                        <div class="modal-footer">
+                            @using (Html.BeginForm("DeleteConfirmed", "Cart", FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("CartDetailID", detail.CartDetailID)
+                                <button type="submit" class="btn btn-danger">Xóa</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            function calculateTotal() {
+                var total = 0;
+                $('tr[id^="cartDetail_"]').each(function () {
+                    var cartDetailID = $(this).attr('id').split('_')[1];
+                    var quantity = parseInt($('#quantityInput_' + cartDetailID).val());
+                    var pricePerUnit = parseFloat($('#pricePerUnit_' + cartDetailID).val());
+                    if (!isNaN(quantity) && !isNaN(pricePerUnit)) {
+                        total += quantity * pricePerUnit;
+                    }
+                });
+                $('#cartSummary p').text('Tổng tiền: ' + total.toLocaleString('vi-VN') + 'đ');
+            }
+
+            $('input[type="number"]').on('change', function () {
+                var cartDetailID = $(this).attr('id').split('_')[1];
+                var quantity = parseInt($(this).val());
+                var pricePerUnit = parseFloat($('#pricePerUnit_' + cartDetailID).val());
+                if (!isNaN(quantity) && !isNaN(pricePerUnit)) {
+                    $('#totalPrice_' + cartDetailID).val((quantity * pricePerUnit).toLocaleString('vi-VN') + 'đ');
+                    calculateTotal();
+                }
+            });
+
+            $('input[name="Size"]').on('change', function () {
+                var cartDetailID = $(this).closest('tr').attr('id').split('_')[1];
+                var pricePerUnit = parseFloat($('#pricePerUnit_' + cartDetailID).val());
+                var quantity = parseInt($('#quantityInput_' + cartDetailID).val());
+                if (!isNaN(quantity) && !isNaN(pricePerUnit)) {
+                    $('#totalPrice_' + cartDetailID).val((quantity * pricePerUnit).toLocaleString('vi-VN') + 'đ');
+                    calculateTotal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

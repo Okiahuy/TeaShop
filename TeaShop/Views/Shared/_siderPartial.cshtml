@@ -1,0 +1,14 @@
+﻿@model IEnumerable<TeaShop.Models.CategorieModel>
+
+
+@foreach (var category in Model)
+{
+    @*@Html.ActionLink(category.CategoryName, "Juice", "Product")*@
+    <a href="@Url.Action("Product", "Product", new { categoryId = category.CategoryID })">
+        @category.CategoryName
+    </a>
+
+}
+
+
+

@@ -1,0 +1,54 @@
+﻿@model TeaShop.Models.HomeViewModel
+
+@{
+    ViewData["Title"] = "Trang Chủ";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Trang Chủ</title>
+    <link rel="stylesheet" type="text/css" href="~/Public/css/Home.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            @*<div class="bentrai">
+                    <h2>CÀ PHÊ</h2>
+                    <span>Cà phê là một loại đồ uống độc đáo kết hợp giữa hương vị đậm đà của trà, vị ngọt ngào của sữa và sự thú vị từ những viên trân châu dai dai, tạo nên một trải nghiệm thưởng thức đầy mới mẻ và hấp dẫn.</span>
+                </div>
+                <div class="benphai">
+                    <img id="hinhanh1" src="~/Images/Cafe/cafemacchiato.png" alt="Hình ảnh trà sữa" />
+                </div>
+            </div>
+
+            <div class="content2">
+                <div class="bentrai1">
+                    <img id="hinhanh2" src="~/Images/TraTraiCay/travai.png" alt="Hình ảnh trà trái cây" />
+                </div>
+                <div class="benphai1">
+                    <h2>ĐẶC SẢN</h2>
+                    <span>Trà trái cây là một loại đồ uống tuyệt vời kết hợp giữa hương vị tươi mát của trái cây và sự thanh khiết của trà, tạo nên một trải nghiệm thưởng thức đầy sảng khoái và hấp dẫn.</span>
+                </div>
+            </div>
+            <span id="linetrai"></span>
+            <img id="logo" src="~/Images/logoMilktea1.png" />
+            <span id="linephai"></span>
+            <div class="nuocbanchay">
+                @foreach (var product in Model.ProductModels)
+                {
+                    <div class="khung1">
+                        <img class="nuoc" src="~/Images/NuocEp/@product.ImageURL" alt="@product.Description" />
+                        <div class="in4_nuoc">
+                            <div class="ten1">@product.ProductName</div>
+                            <div class="name1">Watermelon Juice</div>
+                            <div class="price1">@string.Format("{0:N0}đ", product.Price)</div>
+                            <button class="dat1" type="button">ĐẶT NƯỚC</button>
+                        </div>
+                    </div>
+                }
+            </div>*@
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,275 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutPage.cshtml";
+}
+
+@model IEnumerable<TeaShop.ViewModel.OrderViewModel>
+
+
+<!-- Search Form -->
+@using (Html.BeginForm("Index", "OrderAdmin", FormMethod.Get))
+{
+    <div>
+        <label for="searchString">Find by Customer ID:</label>
+        <input type="text" id="searchString" name="searchString" />
+        <input type="submit" value="Search" />
+    </div>
+}
+
+<!-- Button to Open the Create Modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">Create New Order</button>
+
+<!-- Orders Table -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tên Khách Hàng</th>
+            <th>Ngày Đặt</th>
+            <th>Tổng Số Tiền</th>
+            <th>Trạng Thái</th>
+            <th>Thao Tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CustomerName</td>
+                <td>@item.OrderDate.ToString("yyyy-MM-dd")</td>
+                <td>@item.TotalAmount</td>
+                <td>@item.OrderStatus</td>
+                <td>
+                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editModal" data-id="@item.OrderID">Edit</button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" data-id="@item.OrderID">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Create Modal -->
+<div id="createModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm("Create", "OrderAdmin", FormMethod.Post, new { id = "createForm", area = "Admin" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createModalLabel">Create New Order</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="createCustomerName">Khách hàng</label>
+                        <input type="text" id="createCustomerName" name="CustomerName" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="createPhone">Phone</label>
+                        <input type="text" id="createPhone" name="Phone" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="createEmail">Email</label>
+                        <input type="text" id="createEmail" name="Email" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="createAddress">Địa chỉ</label>
+                        <input type="text" id="createAddress" name="Address" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="createOrderDate">Ngày đặt</label>
+                        <input type="date" id="createOrderDate" name="OrderDate" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="orderItems">Order Items</label>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Giá bán</th>
+                                    <th>Cỡ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderItems">
+                                <tr>
+                                    <td>@Html.DropDownList("OrderItems[0].ProductID", (SelectList)ViewBag.ProductList, "Chọn thức uống", new { @class = "form-control", @required = "required" })</td>
+                                    <td><input type="number" name="OrderItems[0].Quantity" class="form-control" required /></td>
+                                    <td><input type="number" step="0.01" name="OrderItems[0].UnitPrice" value="" class="form-control" required /></td>
+                                    <td>
+                                        <input type="text" name="OrderItems[0].Size" class="form-control" required />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn btn-secondary" onclick="addOrderItem()">Add Item</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="createTotalAmount">Tổng số tiền</label>
+                        <input type="number" step="0.01" id="createTotalAmount" name="TotalAmount" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="createOrderStatus">Trạng thái</label>
+                        <input type="text" id="createOrderStatus" name="OrderStatus" class="form-control" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Create Order</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@foreach (var item in Model)
+{
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <!-- Increased size for wider modal -->
+            <div class="modal-content">
+                @using (Html.BeginForm("Edit", "OrderAdmin", FormMethod.Post, new { id = "editForm", area = "Admin" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="editOrderID" name="OrderID" value="@item.OrderID" />
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Order</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container">
+                            <div class="row">
+                                <!-- Customer Name -->
+                                <div class="col-md-6 form-group">
+                                    <label for="editCustomerName">Customer Name</label>
+                                    <input type="text" id="editCustomerName" name="CustomerName" value="@item.CustomerName" class="form-control" readonly="readonly" required />
+                                </div>
+                                <!-- Order Date -->
+                                <div class="col-md-6 form-group">
+                                    <label for="editOrderDate">Order Date</label>
+                                    <input type="date" id="editOrderDate" name="OrderDate" value="@item.OrderDate.ToString("yyyy-MM-dd")" class="form-control" required />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <!-- Total Amount -->
+                                <div class="col-md-6 form-group">
+                                    <label for="editTotalAmount">Total Amount</label>
+                                    <input type="number" step="0.01" id="editTotalAmount" name="TotalAmount" value="@item.TotalAmount" class="form-control" required />
+                                </div>
+                                <!-- Order Status -->
+                                <div class="col-md-6 form-group">
+                                    <label for="editOrderStatus">Order Status</label>
+                                    <input type="text" id="editOrderStatus" name="OrderStatus" value="@item.OrderStatus" class="form-control" required />
+                                </div>
+                            </div>
+                            <!-- Edit Order Items Section -->
+                            <div class="form-group">
+                                <label for="editOrderItems">Order Items</label>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Tên sản phẩm </th>
+                                            <th>Số lượng</th>
+                                            <th>Giá</th>
+                                            <th>Cỡ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="editOrderItems">
+                                        @for (int i = 0; i < item.OrderItems.Count; i++)
+                                        {
+
+                                            <tr>
+                                                <td><input type="text" name="OrderItems[@i].ProductID" value="@item.OrderItems[i].ProductID" class="form-control" required /></td>
+                                                <td><input type="number" name="OrderItems[@i].Quantity" value="@item.OrderItems[i].Quantity" class="form-control" required /></td>
+                                                <td><input type="number" step="0.01" name="OrderItems[@i].UnitPrice" value="@item.OrderItems[i].UnitPrice" class="form-control" required /></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <button type="button" class="btn btn-secondary" onclick="addEditOrderItem()">Add Item</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+       
+
+<!-- Delete Modal -->
+<div id="deleteModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm("Delete", "OrderAdmin", FormMethod.Post, new { id = "deleteForm", area = "Admin" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="deleteOrderID" name="OrderID" value="@item.OrderID" />
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Delete Order</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc muốn xóa đơn hàng của @item.CustomerName không?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+}
+<script>
+    // JavaScript functions to add new order items in create and edit modals
+    function addOrderItem() {
+        var index = $('#orderItems tr').length;
+        var newRow = `<tr>
+                       <td>@Html.DropDownList("OrderItems[0].ProductID", (SelectList)ViewBag.ProductList, "Chọn thức uống", new { @class = "form-control", @required = "required" })</td>
+                        <td><input type="number" name="OrderItems[${index}].Quantity" class="form-control" required /></td>
+                        <td><input type="number" step="0.01" name="OrderItems[${index}].UnitPrice" class="form-control" required /></td>
+                        <td><input type="text" name="OrderItems[${index}].Size" class="form-control" required /></td>
+                    </tr>`;
+        $('#orderItems').append(newRow);
+    }
+
+    function addEditOrderItem() {
+        var index = $('#editOrderItems tr').length;
+        var newRow = `<tr>
+                        <td><input type="text" name="OrderItems[${index}].ProductID" class="form-control" required /></td>
+                        <td><input type="number" name="OrderItems[${index}].Quantity" class="form-control" required /></td>
+                        <td><input type="number" step="0.01" name="OrderItems[${index}].UnitPrice" class="form-control" required /></td>
+                        <td><input type="text" name="OrderItems[${index}].Size" class="form-control" required /></td>
+
+                    </tr>`;
+        $('#editOrderItems').append(newRow);
+    }
+
+    // Populate edit and delete modals with order ID
+    $('#editModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var orderID = button.data('id');
+        var modal = $(this);
+        modal.find('#editOrderID').val(orderID);
+    });
+
+    $('#deleteModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var orderID = button.data('id');
+        var modal = $(this);
+        modal.find('#deleteOrderID').val(orderID);
+    });
+</script>

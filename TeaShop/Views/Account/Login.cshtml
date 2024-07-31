@@ -1,0 +1,76 @@
+﻿@model TeaShop.ViewModel.LoginViewModel
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        .gradient-form {
+            background-color: #eee;
+            height: 100vh;
+        }
+
+        .gradient-custom-2 {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+        }
+    </style>
+</head>
+<body>
+    <section class="h-100 gradient-form">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-xl-10">
+                    <div class="card rounded-3 text-black">
+                        <div class="row g-0">
+                            <div class="col-lg-6">
+                                <div class="card-body p-md-5 mx-md-4">
+                                    <div class="text-center">
+                                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp"
+                                             style="width: 185px;" alt="logo" />
+                                        <h4 class="mt-1 mb-5 pb-1">We are The Watch Luxury</h4>
+                                        @Html.Partial("Notifications")
+                                    </div>
+                                    @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <p>Vui lòng đăng nhập vào tài khoản</p>
+                                        <div class="form-outline mb-4">
+                                            <label class="form-label" for="Username">Tên tài khoản</label>
+                                            @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Tên tài khoản" })
+                                            @Html.ValidationMessageFor(m => m.Username)
+                                        </div>
+                                        <div class="form-outline mb-4">
+                                            <label class="form-label" for="Password">Mật khẩu</label>
+                                            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => m.Password)
+                                        </div>
+                                        <div class="text-center pt-1 mb-5 pb-1">
+                                            <button type="submit" class="btn btn-primary btn-lg btn-block">Đăng nhập</button>
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-center pb-4">
+                                            <p class="mb-0 me-2">Chưa có tài khoản?</p>
+                                            <a href="@Url.Action("Register", "Account")" class="btn btn-outline-danger">Đăng kí</a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
+                                <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                                    <h4 class="mb-4">Chúng tôi không chỉ là một cửa hàng</h4>
+                                    <p class="small mb-0">
+                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                                        exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

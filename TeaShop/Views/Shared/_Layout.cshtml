@@ -1,0 +1,234 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/Public/css/Header.css">
+    <link rel="stylesheet" href="~/Public/css/Footer.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="~/Public/js/menu.js" defer></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        #navbar {
+            background-color: rgb(144, 14, 14);
+            color: white;
+            width: 100%;
+            position: relative;
+        }
+
+        li {
+            font-family: 'Segoe UI', 'Segoe UI';
+            font-size: 16px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: transparent;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header, .footer {
+            flex-shrink: 0;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        footer {
+            background-color: firebrick;
+            color: #fff;
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            position: relative;
+            top: 110ch;
+        }
+
+        .logo img {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            left: 120px;
+        }
+
+        .box p {
+            width: 300px;
+            text-align: inherit;
+            color: white;
+            padding-left: 150px;
+            position: relative;
+            top: -40px;
+        }
+
+        #titlelogo {
+            padding-left: 30px;
+        }
+
+        footer .box {
+            width: 30%;
+            margin: 10px 0;
+        }
+
+            footer .box h3 {
+                margin-bottom: 15px;
+            }
+
+            footer .box ul {
+                list-style: none;
+                padding: 0;
+            }
+
+                footer .box ul li {
+                    margin-bottom: 10px;
+                }
+
+                    footer .box ul li a {
+                        color: #fff;
+                        text-decoration: none;
+                    }
+
+                        footer .box ul li a:hover {
+                            text-decoration: underline;
+                        }
+
+            footer .box form {
+                display: flex;
+                flex-direction: column;
+            }
+
+                footer .box form input {
+                    padding: 10px;
+                    margin-bottom: 10px;
+                    border: none;
+                    border-radius: 5px;
+                }
+
+                footer .box form button {
+                    padding: 10px;
+                    border: none;
+                    border-radius: 5px;
+                    background-color: #ff6347;
+                    color: #fff;
+                    cursor: pointer;
+                }
+
+                    footer .box form button:hover {
+                        background-color: #ff4500;
+                    }
+
+        li {
+            font-family: 'Segoe UI', 'Segoe UI';
+            font-size: 16px;
+            color: #333;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div id="navbar">
+            <img id="imglogo" src="~/images/logoMilktea1.png" alt="Anh Khoa Milk Tea Logo">
+            <nav>
+                <ul>
+                    <li>@Html.ActionLink("TRANG CHỦ", "Index", "Home")</li>
+                    <li>@Html.ActionLink("VỀ CHÚNG TÔI", "About", "Home")</li>
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn">THỨC UỐNG</a>
+                        <div class="dropdown-content">
+                            @Html.Action("siderPartial", "Category")
+                        </div>
+                    </li>
+                    <li>@Html.ActionLink("KHUYẾN MÃI", "Promotion", "Product")</li>
+                    <li><a href="#" data-toggle="modal" data-target="#cartModal">GIỎ HÀNG</a></li>
+                    @if (Session["Username"] != null)
+                    {
+                        <li>@Html.ActionLink($"Chào, {Session["CustomerName"]}", "Login", "Account")</li>
+                        <li>@Html.ActionLink("Đăng Xuất", "Logout", "Account")</li>
+                    }
+                    else
+                    {
+                        <li>@Html.ActionLink("LOGIN", "Login", "Account")</li>
+                    }
+                </ul>
+            </nav>
+            <div class="timkiem">
+                <input id="input_timkiem" type="text" placeholder="Từ khóa tìm kiếm...">
+            </div>
+        </div>
+    </header>
+    <main class="content">
+        @RenderBody()
+    </main>
+    @Html.Partial("Partialfooter")
+    <footer>
+        <div id="footer">
+            <div class="box">
+                <h3>LOGO</h3>
+                <div class="logo">
+                    <img src="~/Images/logoMilktea1.png" alt="Logo" />
+                </div>
+                <p>Cung cấp sản phẩm với chất lượng an toàn cho quý khách</p>
+            </div>
+            <div class="box">
+                <h3>NỘI DUNG</h3>
+                <ul class="quick-menu">
+                    <li class="item">
+                        <a href="#home">Trang chủ</a>
+                    </li>
+                    <li class="item">
+                        <a href="#products">Sản phẩm</a>
+                    </li>
+                    <li class="item">
+                        <a href="#blog">Blog</a>
+                    </li>
+                    <li class="item">
+                        <a href="#contact">Liên hệ</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="box">
+                <h3>LIÊN HỆ</h3>
+                <form>
+                    <input type="text" placeholder="Địa chỉ email" />
+                    <button type="submit">Nhận tin</button>
+                </form>
+            </div>
+        </div>
+    </footer>
+    @Html.Action("_CartPartial", "Cart")
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#thucUongDropdown').on('click', function (e) {
+                e.preventDefault();
+                var $dropdownMenu = $('#thucUongMenu');
+                if ($dropdownMenu.is(':empty')) {
+                    $.ajax({
+                        url: '@Url.Action("siderPartial", "Category")',
+                        type: 'GET',
+                        success: function (data) {
+                            $dropdownMenu.html(data);
+                        },
+                        error: function () {
+                            $dropdownMenu.html('<p class="dropdown-item">Failed to load categories.</p>');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

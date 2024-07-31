@@ -1,0 +1,160 @@
+﻿    @{
+        Layout = "~/Areas/Admin/Views/Shared/_LayoutPage.cshtml";
+    }
+
+    @model IEnumerable<TeaShop.Models.SupplierModel>
+
+    <!-- Search Form -->
+    @using (Html.BeginForm("Index", "SupplierAdmin", FormMethod.Get))
+    {
+        <div>
+            <input type="text" id="searchString" name="searchString" placeholder="Tìm kiếm nhà cung cấp" />
+            <input type="submit" value="Search" class="btn btn-primary" />
+        </div>
+    }
+
+    <!-- Button to Open the Create Modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">Thêm nhà cung cấp</button>
+
+    <!-- Suppliers Table -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Tên nhà cung cấp</th>
+                <th>Số điện thoại</th>
+                <th>Địa chỉ email</th>
+                <th>Địa chỉ</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.SupplierName</td>
+                    <td>@item.Phone</td>
+                    <td>@item.Email</td>
+                    <td>@item.Address</td>
+                    <td>
+                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editModal_@item.SupplierID">Sửa</button>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal_@item.SupplierID">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+    <!-- Create Modal -->
+    <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                @using (Html.BeginForm("Create", "SupplierAdmin", FormMethod.Post, new { id = "createForm", area = "Admin" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createModalLabel">Thêm Nhà Cung Cấp</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="createSupplierName">Tên Nhà Cung Cấp</label>
+                            <input type="text" id="createSupplierName" name="SupplierName" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="createPhone">Số Điện Thoại</label>
+                            <input type="text" id="createPhone" name="Phone" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="createEmail">Địa Chỉ Email</label>
+                            <input type="text" id="createEmail" name="Email" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="createAddress">Địa Chỉ</label>
+                            <input type="text" id="createAddress" name="Address" class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Thêm Mới</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+        @foreach (var item in Model)
+        {
+        <!-- Edit Modal -->
+        <div id="editModal_@item.SupplierID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    @using (Html.BeginForm("Edit", "SupplierAdmin", FormMethod.Post, new { id = "editForm", area = "Admin" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModalLabel">Cập Nhật Thông Tin Nhà Cung Cấp</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="editSupplierID" name="SupplierID" value="@item.SupplierID" />
+                            <div class="form-group">
+                                <label for="editSupplierName">Tên Nhà Cung Cấp</label>
+                                <input type="text" id="editSupplierName" name="SupplierName" value="@item.SupplierName" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="editPhone">Số Điện Thoại</label>
+                                <input type="text" id="editPhone" name="Phone" value="@item.Phone" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="editEmail">Địa Chỉ Email</label>
+                                <input type="text" id="editEmail" name="Email" value="@item.Email" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="editAddress">Địa Chỉ</label>
+                                <input type="text" id="editAddress" name="Address" value="@item.Address" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary">Cập Nhật</button>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    }
+
+    @foreach (var item in Model)
+    {
+        <!-- Delete Modal -->
+        <div id="deleteModal_@item.SupplierID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Xóa Nhà Cung Cấp</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc muốn xóa nhà cung cấp @item.SupplierName?</p>
+                    </div>
+                    <div class="modal-footer">
+                        @using (Html.BeginForm("Delete", "SupplierAdmin", FormMethod.Post, new { id = "deleteForm", area = "Admin" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" id="SupplierID" name="SupplierID" value="@item.SupplierID" />
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-danger">Xóa</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }

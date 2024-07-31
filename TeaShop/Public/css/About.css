@@ -1,0 +1,64 @@
+﻿main {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    width: 100%; /* Chiếm toàn bộ chiều rộng màn hình */
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px;
+}
+
+    section img {
+        max-width: 40%;
+        margin-right: 20px;
+        border-radius: 10px;
+    }
+
+
+
+h4 {
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+p, ul {
+    color: #555;
+}
+
+    ul li {
+        margin-bottom: 5px;
+    }
+
+#promotion-banner {
+    background-color: #ffeb3b;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ffd700;
+    border-radius: 5px;
+    max-width: 1000px;
+    margin: 20px auto;
+}
+
+/* Animation */
+section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+    section.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }

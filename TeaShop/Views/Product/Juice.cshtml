@@ -1,0 +1,105 @@
+﻿@*@model TeaShop.Models.HomeViewModel
+
+@{
+    ViewData["Title"] = "Nước Ép";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="~/Public/css/site.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="~/Public/js/menu.js"></script>
+</head>
+<body>
+
+    <div class="menu">
+        @foreach (var product in Model.ProductModels)
+        {
+            <div class="khung1">
+                <div class="ten1">@product.ProductName</div>
+                <img class="hinhanh" src="/Images/NuocEp/@product.ImageURL" alt="@product.Description" />
+                <div class="in4_nuoc">
+                    <div class="price1">@string.Format("{0:N0}đ", product.Price)</div>
+                    <a href="#" class="dat1" data-toggle="modal" data-target="#productModal_@product.ProductID"
+                       data-name="@product.ProductName"
+                       data-subtitle="Lime Black Tea"
+                       data-image-url="/Images/NuocEp/@product.ImageURL"
+                       data-price="@string.Format("{0:N0}đ", product.Price)">ĐẶT NƯỚC</a>
+                </div>
+            </div>
+        }
+    </div>
+
+    @foreach (var product in Model.ProductModels)
+    {
+        <div class="modal fade" id="productModal_@product.ProductID" tabindex="-1" role="dialog" aria-labelledby="productModalLabel_" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="productTitle">@product.ProductName</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-ms-6">
+                                <img id="productImage" src="/Images/NuocEp/@product.ImageURL" alt="@product.Description" class="img-fluid ms-3" style="max-width: 450px; max-height: 700px;" />
+                                <p id="productSubtitle">@product.ProductName</p>
+                            </div>
+                            <div class="col-ms-6">
+                                <div class="form-group">
+                                    <label for="productSize">Kích cỡ:</label>
+                                    <div id="productSize">
+                                        <button class="btn btn-outline-primary">Hot</button>
+                                        <button class="btn btn-outline-primary">Ice regular size</button>
+                                        <button class="btn btn-outline-primary">Big size ice</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="quantityInput">Số lượng:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">-</button>
+                                        </div>
+                                        <input type="number" class="form-control" id="quantityInput" value="1" min="1" />
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity()">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="noteInput">Ghi chú:</label>
+                                    <textarea class="form-control" id="noteInput"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="productPrice">Giá:</label>
+                                    <p id="productPrice">@string.Format("{0:N0}đ", product.Price)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="orderProduct(@product.ProductID)" class="btn btn-primary">ĐẶT HÀNG</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script>
+        function orderProduct(productId) {
+            var quantity = document.getElementById("quantityInput").value;
+            var note = document.getElementById("noteInput").value;
+            alert("Đã đặt hàng " + quantity + " sản phẩm " + productId + " với ghi chú: " + note);
+        }
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>*@

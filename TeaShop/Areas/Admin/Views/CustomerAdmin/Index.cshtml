@@ -1,0 +1,47 @@
+﻿
+@model IEnumerable<TeaShop.Models.CustomerModel>
+
+@{
+    ViewBag.Title = "Index";
+    var err = ViewBag.ErrCustomerID as string;
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutPage.cshtml";
+}
+<!-- Search Form -->
+@using (Html.BeginForm("Index", "CustomerAdmin", FormMethod.Get))
+{
+    <div class="form-group">
+        <label for="searchTerm">@err</label>
+        <label for="searchTerm">Search:</label>
+        <input type="text" id="searchCategoryName" name="CustomerName" placeholder="Search..." />
+        <button type="submit" class="btn btn-primary mt-2">Search</button>
+    </div>
+}
+
+
+<!-- Customer Table -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Mã Khách Hàng</th>
+            <th>Họ và Tên</th>
+            <th>Liên Lạc</th>
+            <th>Địa Chỉ Mail</th>
+            <th>Địa Chỉ Thường Trú</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CustomerID</td>
+                <td>@item.CustomerName</td>
+                <td>@item.Phone</td>
+                <td>@item.Email</td>
+                <td>@item.Address</td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+

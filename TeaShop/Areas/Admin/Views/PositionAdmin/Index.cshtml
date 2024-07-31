@@ -1,0 +1,135 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutPage.cshtml";
+}
+
+@model IEnumerable<TeaShop.Models.PositionModel>
+
+<!-- Search Form -->
+@using (Html.BeginForm("Index", "PositionAdmin", FormMethod.Get))
+{
+    <div>
+        <label for="searchString">Tìm kiếm:</label>
+        <input type="text" id="searchString" name="searchString" />
+        <input type="submit" class="btn-outline-success" value="Search" />
+    </div>
+}
+
+<!-- Button to Open the Create Modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">Add Position</button>
+
+<!-- Positions Table -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Position ID</th>
+            <th>Position Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.PositionID</td>
+                <td>@item.PositionName</td>
+                <td>
+                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target=#editModal_@item.PositionID>Edit</button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target=#deleteModal_@item.PositionID>Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Create Modal -->
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm("Create", "PositionAdmin", FormMethod.Post, new { id = "createForm", area = "Admin" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createModalLabel">Create New Position</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="createPositionName">Position Name</label>
+                        <input type="text" id="createPositionName" name="PositionName" class="form-control" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@foreach (var item in Model)
+{
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal_@item.PositionID" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                @using (Html.BeginForm("Edit", "PositionAdmin", FormMethod.Post, new { id = "editForm", area = "Admin" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Position</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="editPositionID" value="@item.PositionID" name="PositionID" />
+                        <div class="form-group">
+                            <label for="editPositionName">Position Name</label>
+                            <input type="text" id="editPositionName" name="PositionName" class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@foreach (var item in Model)
+{
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal_@item.PositionID" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Loại bỏ chức vụ</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                @using (Html.BeginForm("DeleteConfirmed", "PositionAdmin", FormMethod.Post, new { id = item.PositionID }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="modal-body">
+                        <input type="hidden" id="deletePositionID" name="PositionID" value="@item.PositionID" />
+                        <p>Bạn có chắc muốn xóa chức vụ <B>@item.PositionName </B>này không?</p>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

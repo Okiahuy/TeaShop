@@ -1,0 +1,131 @@
+﻿@model TeaShop.Models.HomeViewModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="~/Public/css/site.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    @*<script src="~/js/site.js"></script>*@
+</head>
+<body>
+    <div class="menu">
+        <div class="product-row">
+            @foreach (var product in Model.ProductModels)
+            {
+                <div class="khung1">
+                    <div class="ten1">@product.ProductName</div>
+
+                    @{
+                           
+                            string relativeImagePath = "";
+
+                           
+                            relativeImagePath = "~/Images/" + product.ImageURL.Replace("\\", "/");
+                         
+                    }
+                    
+                    <img class="hinhanh" src="@Url.Content(relativeImagePath)" alt="@product.Description" />
+                    <div class="in4_nuoc">
+                        <div class="price1">@string.Format("{0:N0}đ", product.Price) </div>
+                        <a href="#" class="dat1" data-toggle="modal" data-target="#productModal_@product.ProductID"
+                           data-name="@product.ProductName"
+                           data-subtitle="Lime Black Tea"
+                           data-image-url="/Images/@product.ImageURL"
+                           data-price="@string.Format("{0:N0}đ", product.Price)">ĐẶT NƯỚC</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+
+    @foreach (var product in Model.ProductModels)
+    {
+        <div class="modal fade" id="productModal_@product.ProductID" tabindex="-1" role="dialog" aria-labelledby="productModalLabel_" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="productTitle">@product.ProductName</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            @if (Session["CustomerID"] != null)
+                            {
+                                <div class="col-ms-6">
+                                    @{
+
+
+                                        string relativeImagePath = "";
+
+
+                                        string imagePath = Path.Combine(product.ImageURL);
+                                       
+                                            relativeImagePath = "~/Images/" + Path.GetFileName(imagePath).Replace("\\", "/");
+
+
+                                        
+                                    }
+                                    <img id="productImage" src="@Url.Content(relativeImagePath)" alt="@product.Description" class="img-fluid ms-3" style="max-width: 450px; max-height: 700px;" />
+                                    <p id="productSubtitle">@product.ProductName</p>
+                                </div>
+                                <div class="col-ms-6">
+                                    @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        @Html.Hidden("ProductID", product.ProductID)
+                                        <div class="form-group">
+                                            <label for="Size">Kích cỡ:</label>
+                                            <div id="Size">
+                                                <label><input type="radio" name="Size" value="Hot" checked> Hot</label>
+                                                <label><input type="radio" name="Size" value="Ice regular size"> Ice regular size</label>
+                                                <label><input type="radio" name="Size" value="Big size ice"> Big size ice</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="Quantity">Số lượng:</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity(@product.ProductID)">-</button>
+                                                </div>
+                                                <input type="number" class="form-control" name="Quantity" id="quantityInput_@product.ProductID" value="1" min="1" />
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity(@product.ProductID)">+</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="productPrice">Giá:</label>
+                                            <p id="productPrice">@string.Format("{0:N0}đ", product.Price)</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">THÊM GIỎ HÀNG</button>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-12 text-center">
+                                    <h5 class="modal-title">Yêu cầu đăng nhập!</h5>
+                                    <p>Bạn cần đăng nhập để xem giỏ hàng.</p>
+                                    @Html.ActionLink("Đăng nhập", "Login", "Account", null, new { @class = "btn btn-primary" })
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,245 @@
+﻿.content {
+    height: 80vh;
+    background-color: transparent;
+}
+
+.content2 {
+    height: 80vh;
+    width: 99.92%;
+    margin-bottom: 5px;
+    background-color: transparent;
+}
+
+.container {
+    height: 80vh;
+    width: 99.92%;
+}
+
+.bentrai {
+    width: 50%;
+    height: 40vh;
+    background: transparent;
+    padding: 40px;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    position: relative;
+    top: 80px;
+}
+
+    .bentrai h2 {
+        position: absolute;
+        width: 30%;
+        padding-left: 60px;
+        width: 200px;
+        height: auto;
+        transform: translateY(25px);
+        color: firebrick;
+    }
+
+    .bentrai span {
+        color: black;
+        transform: translateY(70px);
+        height: 30vh;
+        padding-left: 60px;
+        line-height: 1.6;
+    }
+
+.benphai {
+    background: transparent;
+    float: right;
+    padding: 40px;
+    width: 50%;
+    height: 40vh;
+    position: relative;
+    top: -380px;
+}
+
+.bentrai1 {
+    width: 49%;
+    height: 40vh;
+    background: transparent;
+    padding: 40px;
+    display: flex;
+    position: relative;
+    top: 80px;
+}
+
+.benphai1 {
+    background: transparent;
+    float: right;
+    padding: 40px;
+    width: 50%;
+    height: 40vh;
+    font-size: 20px;
+    font-weight: bold;
+    position: relative;
+    top: -480px;
+    margin-left: 20px;
+}
+
+    .benphai1 h2 {
+        color: firebrick;
+    }
+
+    .benphai1 span {
+        color: black;
+        transform: translateY(70px);
+        height: 30vh;
+        line-height: 1.6;
+    }
+
+#hinhanh1 {
+    height: 70vh;
+    width: 75%;
+    transform: translateY(-15px);
+    position: relative;
+    left: 40px;
+    filter: drop-shadow(10px 10px 15px rgba(0, 0, 0, 0.5));
+}
+
+#hinhanh2 {
+    height: 60vh;
+    width: 80%;
+    transform: translateY(-320px);
+    position: relative;
+    left: 20px;
+    filter: drop-shadow(10px 10px 15px rgba(0, 0, 0, 0.5));
+}
+
+#linetrai {
+    height: 16px;
+    width: 46.5%;
+    display: flex;
+    border-radius: 30px;
+    position: relative;
+    top: -298px;
+    background: rgb(144, 14, 14);
+}
+
+#linephai {
+    margin: 0;
+    height: 16px;
+    width: 46.5%;
+    display: flex;
+    position: relative;
+    border-radius: 30px;
+    left: 53.6%;
+    z-index: 1;
+    background: rgb(144, 14, 14);
+    transform: translateY(-314px);
+}
+
+#logo {
+    position: absolute;
+    left: 41%;
+    transform: translateY(-433px);
+    height: 250px;
+    width: 250px;
+    z-index: 2;
+}
+
+.nuocbanchay {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: -10px;
+    transform: translateY(-292px);
+    height: 90vh;
+    width: 100%;
+}
+
+.khung1 {
+    transform: translateY(120px);
+    width: 25%;
+    height: 350px;
+    margin: 0 auto;
+}
+
+.khung2 {
+    transform: translateY(120px);
+    width: 19%;
+    height: 350px;
+    margin-left: 5px;
+}
+
+.khung3 {
+    transform: translateY(120px);
+    width: 19%;
+    height: 350px;
+    margin-left: 5px;
+}
+
+.khung4 {
+    transform: translateY(120px);
+    width: 19%;
+    height: 350px;
+    margin-left: 5px;
+}
+
+.khung5 {
+    transform: translateY(120px);
+    width: 19%;
+    height: 350px;
+    margin-left: 5px;
+}
+
+.khung6 {
+    transform: translateY(120px);
+    width: 19%;
+    height: 350px;
+    margin-left: 5px;
+    margin-right: 9px;
+}
+
+.nuoc {
+    width: 100%;
+    height: 250px;
+}
+
+.in4_nuoc {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.6;
+    text-align: center;
+    color: black;
+}
+
+.ten1,
+.ten2,
+.ten3,
+.ten4,
+.ten5,
+.ten6 {
+    padding: 5px;
+    font-weight: bold;
+    font-size: 20px;
+    width: 200px;
+    height: auto;
+}
+
+.price1,
+.price2,
+.price3,
+.price4,
+.price5,
+.price6 {
+    padding: 5px;
+    font-weight: bold;
+    font-size: 20px;
+    color: rgb(144, 14, 14);
+}
+
+.dat1,
+.dat2,
+.dat3,
+.dat4,
+.dat5,
+.dat6 {
+    width: 113px;
+    height: 31px;
+    border-radius: 5px;
+    margin: 0 auto;
+    background: white;
+    font-size: 15px;
+    color: rgb(144, 14, 14);
+}
