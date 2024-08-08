@@ -1,0 +1,194 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutPage.cshtml";
+}
+
+@model IEnumerable<TeaShop.Models.PromotionDetailModel>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .table td, .table th {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table img {
+            display: block;
+            margin: 0 auto;
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+        .text-center {
+            vertical-align: middle !important;
+        }
+
+        .search-box {
+            width: 250px;
+            display: flex;
+            align-items: center;
+            background-color: #f1f1f1;
+            border-radius: 20px;
+            padding: 5px 10px;
+        }
+
+            .search-box input {
+                border: none;
+                background: none;
+                outline: none;
+                padding: 5px 10px;
+            }
+
+            .search-box i {
+                color: #999;
+            }
+    </style>
+</head>
+<body>
+
+    <!-- Search Form -->
+    @using (Html.BeginForm("Index", "PromotionDetailAdmin", FormMethod.Get))
+    {
+        <div class="search-box">
+            <input type="text" id="searchString" name="searchString" placeholder="Tìm kiếm khuyến mãi hoặc sản phẩm" />
+            <button type="submit" style="border: none; background: none; float:right;">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    }
+    <br />
+    <!-- Button to Open the Create Modal -->
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createModal">Thêm chi tiết khuyến mãi</button>
+    <br />
+    <br />
+    <!-- Promotions Table -->
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Khuyến mãi</th>
+                <th>Sản phẩm</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Promotion.PromotionName</td>
+                    <td>@item.Product.ProductName</td>
+                    <td>
+                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editModal_@item.PromotionDetailID">Sửa</button>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal_@item.PromotionDetailID">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Create Modal -->
+    <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                @using (Html.BeginForm("Create", "PromotionDetailAdmin", FormMethod.Post, new { id = "createForm", area = "Admin" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createModalLabel">Thêm Chi Tiết Khuyến Mãi</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="createPromotionID">Khuyến Mãi</label>
+                            @Html.DropDownList("PromotionID", (SelectList)ViewBag.PromotionID, "Chọn Khuyến Mãi", new { @class = "form-control", required = "required" })
+                        </div>
+                        <div class="form-group">
+                            <label for="createProductID">Sản Phẩm</label>
+                            @Html.DropDownList("ProductID", (SelectList)ViewBag.ProductID, "Chọn Sản Phẩm", new { @class = "form-control", required = "required" })
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Thêm Mới</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @foreach (var item in Model)
+    {
+        <!-- Edit Modal -->
+        <div id="editModal_@item.PromotionDetailID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    @using (Html.BeginForm("Edit", "PromotionDetailAdmin", FormMethod.Post, new { id = "editForm", area = "Admin" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModalLabel">Cập Nhật Thông Tin Chi Tiết Khuyến Mãi</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="editPromotionDetailID" name="PromotionDetailID" value="@item.PromotionDetailID" />
+                            <div class="form-group">
+                                <label for="editPromotionID">Khuyến Mãi</label>
+                                @Html.DropDownList("PromotionID", (SelectList)ViewBag.PromotionID, "Chọn Khuyến Mãi", new { @class = "form-control", required = "required" })
+                            </div>
+                            <div class="form-group">
+                                <label for="editProductID">Sản Phẩm</label>
+                                @Html.DropDownList("ProductID", (SelectList)ViewBag.ProductID, "Chọn Sản Phẩm", new { @class = "form-control", required = "required" })
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary">Cập Nhật</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    @foreach (var item in Model)
+    {
+        <!-- Delete Modal -->
+        <div id="deleteModal_@item.PromotionDetailID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Xóa Chi Tiết Khuyến Mãi</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc muốn xóa chi tiết khuyến mãi này?</p>
+                    </div>
+                    <div class="modal-footer">
+                        @using (Html.BeginForm("Delete", "PromotionDetailAdmin", FormMethod.Post, new { id = "deleteForm", area = "Admin" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" id="PromotionDetailID" name="PromotionDetailID" value="@item.PromotionDetailID" />
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-danger">Xóa</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>

@@ -1,8 +1,39 @@
 ﻿@{
     Layout = "~/Areas/Admin/Views/Shared/_LayoutPage.cshtml";
 }
+@using PagedList.Mvc;
+@using PagedList;
+@model IPagedList<TeaShop.ViewModel.OrderViewModel>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+    .order-status {
+        position: relative;
+        cursor: pointer;
+    }
 
-@model IEnumerable<TeaShop.ViewModel.OrderViewModel>
+    .cancellation-reason-tooltip {
+        display: none;
+        position: absolute;
+        background-color: #333;
+        color: #fff;
+        padding: 5px;
+        border-radius: 5px;
+        z-index: 1000;
+        top: 70%;
+        left: 0;
+        white-space: nowrap;
+        width: max-content;
+        /* Ensure tooltip is hidden initially */
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .order-status:hover .cancellation-reason-tooltip,
+    .order-status:focus .cancellation-reason-tooltip {
+        display: block;
+        opacity: 1;
+    }
+</style>
 
 
 <!-- Search Form -->
@@ -14,18 +45,15 @@
         <input type="submit" value="Search" />
     </div>
 }
-
-<!-- Button to Open the Create Modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">Create New Order</button>
-
 <!-- Orders Table -->
 <table class="table">
-    <thead>
+    <thead class="thead-dark">
         <tr>
             <th>Tên Khách Hàng</th>
             <th>Ngày Đặt</th>
             <th>Tổng Số Tiền</th>
             <th>Trạng Thái</th>
+            @*<th>Lý do(Nếu có)</th>*@
             <th>Thao Tác</th>
         </tr>
     </thead>
@@ -35,16 +63,168 @@
             <tr>
                 <td>@item.CustomerName</td>
                 <td>@item.OrderDate.ToString("yyyy-MM-dd")</td>
-                <td>@item.TotalAmount</td>
-                <td>@item.OrderStatus</td>
+                <td>@string.Format("{0:N0}đ", item.TotalAmount)</td>
+
+                <td class="order-status">
+                    @item.OrderStatus
+                    @if (!string.IsNullOrEmpty(item.CancellationReason))
+                    {
+                        <div class="cancellation-reason-tooltip">
+                            @item.CancellationReason
+                        </div>
+                    }
+                </td>
                 <td>
-                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editModal" data-id="@item.OrderID">Edit</button>
-                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" data-id="@item.OrderID">Delete</button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#orderDetailModal_@item.OrderID">
+                        Xem Chi Tiết
+                    </button>
+                    <a href="@Url.Action("PrintInvoice", "OrderAdmin", new { id = item.OrderID })" class="btn btn-primary">Download Invoice as PDF</a>
+
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal_@item.OrderID">Delete</button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<div class="container mt-3">
+    @if (Model.PageCount > 1)
+    {
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1, searchString = ViewBag.CurrentFilter })" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">&laquo;</span>
+                    </li>
+                }
+
+                @for (int i = 1; i <= Model.PageCount; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = i, searchString = ViewBag.CurrentFilter })">@i</a>
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1, searchString = ViewBag.CurrentFilter })" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">&raquo;</span>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>
+
+@foreach (var order in Model)
+{
+    <!-- Modal -->
+    <div class="modal fade" id="orderDetailModal_@order.OrderID" tabindex="-1" role="dialog" aria-labelledby="orderDetailModalLabel_@order.OrderID" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orderDetailModalLabel_@order.OrderID">Chi Tiết Đơn Hàng @order.OrderID</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Nội dung chi tiết đơn hàng sẽ được tải động -->
+                    <div>
+                        <h3>Thông Tin Đơn Hàng</h3>
+                        <p><strong>Mã Đơn Hàng:</strong> @order.OrderID</p>
+                        <p><strong>Tên Khách Hàng:</strong> @order.CustomerName</p>
+                        <p><strong>Số Điện Thoại:</strong> @order.Phone</p>
+                        <p><strong>Email:</strong> @order.Email</p>
+                        <p><strong>Địa Chỉ:</strong> @order.Address</p>
+                        <p><strong>Ngày Đặt:</strong> @order.OrderDate.ToString("yyyy-MM-dd")</p>
+                        <p><strong>Tổng Số Tiền:</strong> @string.Format("{0:N0}đ", order.TotalAmount)</p>
+                        <p><strong>Trạng Thái:</strong> @order.OrderStatus</p>
+                        @if (!string.IsNullOrEmpty(order.CancellationReason))
+                        {
+                            <p><strong>Lý Do Hủy Đơn:</strong> @order.CancellationReason</p>
+                        }
+                    </div>
+
+                    <div>
+                        <h3>Chi Tiết Sản Phẩm</h3>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Sản Phẩm</th>
+                                    <th>Số Lượng</th>
+                                    <th>Giá</th>
+                                    <th>Tổng Giá</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in order.OrderItems)
+                                {
+                                    <tr>
+                                        <td>@item.ProductName</td>
+                                        <td>@item.Quantity</td>
+                                        <td>@string.Format("{0:N0}đ", item.UnitPrice)</td>
+                                        <td>@string.Format("{0:N0}đ", item.Quantity * item.UnitPrice)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <form method="post" action="@Url.Action("UpdateStatus", "OrderAdmin", new { id = order.OrderID })">
+                            <div class="form-group">
+                                <label for="orderStatus_@order.OrderID">Trạng Thái Đơn Hàng</label>
+                                <select id="orderStatus_@order.OrderID" name="orderStatus" class="form-control">
+                                    <option value="Chờ xử lý" @(order.OrderStatus == "Chờ xử lý" ? "selected" : "")>Chờ xử lý</option>
+
+                                    <option value="Đã giao" @(order.OrderStatus == "Đã giao" ? "selected" : "")>Đã giao</option>
+                                    <option value="Đã hủy" @(order.OrderStatus == "Đã hủy" ? "selected" : "")>Đã hủy</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Cập Nhật Trạng Thái</button>
+                        </form>
+
+                        @if (order.OrderStatus != "Đã hủy")
+                        {
+                            <form method="post" action="@Url.Action("CancelOrder", "OrderAdmin", new { id = order.OrderID })">
+                                <div class="form-group">
+                                    <label for="cancellationReason_@order.OrderID">Lý Do Hủy Đơn (nếu có)</label>
+                                    <textarea id="cancellationReason_@order.OrderID" name="cancellationReason" class="form-control"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-danger">Hủy Đơn Hàng</button>
+                            </form>
+                        }
+                    </div>
+
+                    <a href="@Url.Action("Index", "OrderAdmin")" class="btn btn-secondary">Quay Lại Danh Sách Đơn Hàng</a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 <!-- Create Modal -->
 <div id="createModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
@@ -182,56 +362,53 @@
                                         {
 
                                             <tr>
-                                                <td><input type="text" name="OrderItems[@i].ProductID" value="@item.OrderItems[i].ProductID" class="form-control" required /></td>
+                                                <td><input type="text" name="OrderItems[@i].ProductID" value="@item.OrderItems[i].ProductName" class="form-control" required /></td>
                                                 <td><input type="number" name="OrderItems[@i].Quantity" value="@item.OrderItems[i].Quantity" class="form-control" required /></td>
                                                 <td><input type="number" step="0.01" name="OrderItems[@i].UnitPrice" value="@item.OrderItems[i].UnitPrice" class="form-control" required /></td>
                                             </tr>
                                         }
                                     </tbody>
                                 </table>
-                                <button type="button" class="btn btn-secondary" onclick="addEditOrderItem()">Add Item</button>
+                                <button type="button" class="btn btn-secondary" onclick="addEditOrderItem()">Thêm</button>
                             </div>
                         </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <!-- Delete Modal -->
+    <div id="deleteModal_@item.OrderID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                @using (Html.BeginForm("Delete", "OrderAdmin", FormMethod.Post, new { id = "deleteForm", area = "Admin" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="deleteOrderID" name="OrderID" value="@item.OrderID" />
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Delete Order</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc muốn xóa đơn hàng của @item.CustomerName không?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-danger">Xóa</button>
                     </div>
                 }
             </div>
         </div>
     </div>
 
-
-       
-
-<!-- Delete Modal -->
-<div id="deleteModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            @using (Html.BeginForm("Delete", "OrderAdmin", FormMethod.Post, new { id = "deleteForm", area = "Admin" }))
-            {
-                @Html.AntiForgeryToken()
-                <input type="hidden" id="deleteOrderID" name="OrderID" value="@item.OrderID" />
-
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Delete Order</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>Bạn có chắc muốn xóa đơn hàng của @item.CustomerName không?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </div>
-            }
-        </div>
-    </div>
-</div>
 }
 <script>
     // JavaScript functions to add new order items in create and edit modals

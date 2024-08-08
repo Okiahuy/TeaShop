@@ -14,7 +14,7 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         .search-box {
-            width: 300px;
+            width: 250px;
             display: flex;
             align-items: center;
             background-color: #f1f1f1;
@@ -27,7 +27,6 @@
                 background: none;
                 outline: none;
                 padding: 5px 10px;
-                width: 100%;
             }
 
             .search-box i {
@@ -37,52 +36,54 @@
 </head>
 <body>
 
-    <div class="container">
-        <!-- Search Form -->
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <div class="search-box">
-                    @using (Html.BeginForm("Index", "CategorieAdmin", FormMethod.Get, new { @class = "form-inline" }))
-                    {
-                        <input type="text" id="searchCategoryName" name="CategoryName" placeholder="Search..." />
-                        <button type="submit" style="border: none; background: none; padding: 0;">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    }
-                </div>
-            </div>
-
-            <div class="col-md-2">
-                <button class="btn btn-primary" data-toggle="modal" data-target="#createModal">Add New Category</button>
+    <!-- Search Form -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <div class="search-box">
+                @using (Html.BeginForm("Index", "CategorieAdmin", FormMethod.Get, new { @class = "form-inline" }))
+                {
+                    <input type="text" id="searchCategoryName" name="CategoryName" placeholder="Search..." />
+                    <button type="submit" style="border: none; background: none; ">
+                        <i class="fas fa-search"></i>
+                    </button>
+                }
             </div>
         </div>
 
-        <!-- Category Table -->
-        <table class="table text-center table-striped">
-            <thead>
-                <tr>
-                    <th>CategoryID</th>
-                    <th>CategoryName</th>
-                    <th>Description</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.CategoryID</td>
-                        <td>@item.CategoryName</td>
-                        <td>@item.Description</td>
-                        <td>
-                            <button class="btn btn-warning" data-toggle="modal" data-target="#editModal_@item.CategoryID">Edit</button>
-                            <button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal_@item.CategoryID">Delete</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+
     </div>
+
+    <!-- Category Table -->
+    <table class="table text-center table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <div class="col-md-2">
+                    <button class="btn btn-success" data-toggle="modal" data-target="#createModal">Thêm loại</button>
+                </div>
+            </tr>
+            <br />
+            <tr>
+                <th>Mã loại</th>
+                <th>Tên loại</th>
+                <th>Mô tả</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.CategoryID</td>
+                    <td>@item.CategoryName</td>
+                    <td>@item.Description</td>
+                    <td>
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#editModal_@item.CategoryID">Sửa</button>
+                        <button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal_@item.CategoryID">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
 
     <!-- Create Modal -->

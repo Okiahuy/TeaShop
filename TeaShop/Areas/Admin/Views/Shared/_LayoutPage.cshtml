@@ -7,114 +7,117 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     @RenderSection("styles", required: false)
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #F8F9FA;
-        }
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #F8F9FA;
+    }
 
-        .sidebar {
-            width: 250px;
-            height: 100vh;
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        background-color: paleturquoise;
+        position: fixed;
+        top: 0;
+        left: 0;
+        border-right: 1px solid #ddd;
+    }
+
+        .sidebar .logo {
+            padding: 15px;
+            font-size: 20px;
+            text-align: center;
             background-color: #fff;
-            position: fixed;
-            top: 0;
-            left: 0;
-            border-right: 1px solid #ddd;
+            background-color: paleturquoise;
         }
 
-            .sidebar .logo {
-                padding: 15px;
-                font-size: 20px;
-                text-align: center;
-                background-color: #fff;
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+            .sidebar ul li {
+                padding: 10px 20px;
             }
 
-            .sidebar ul {
-                list-style: none;
-                padding: 0;
-            }
-
-                .sidebar ul li {
-                    padding: 10px 20px;
+                .sidebar ul li a {
+                    text-decoration: none;
+                    color: #333;
+                    display: block;
                 }
 
-                    .sidebar ul li a {
-                        text-decoration: none;
-                        color: #333;
-                        display: block;
+                    .sidebar ul li a:hover {
+                        color: crimson;
+                        text-decoration: underline;
                     }
 
-                        .sidebar ul li a:hover {
-                            background-color: #f1f1f1;
-                            color: #007bff;
-                        }
+                .sidebar ul li.active a {
+                    background-color: #007bff;
+                    color: #fff;
+                }
 
-                    .sidebar ul li.active a {
-                        background-color: #007bff;
-                        color: #fff;
-                    }
+            .main-content {
+                margin-left: 250px;
+                padding: 20px;
+                margin-bottom:10px;
+            }
 
-        .main-content {
-            margin-left: 250px;
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background-color: #fff;
+        border-bottom: 1px solid #ddd;
+    }
+
+        .header .search-box {
+            width: 300px;
+            display: flex;
+            align-items: center;
+            background-color: #f1f1f1;
+            border-radius: 20px;
+            padding: 5px 10px;
+        }
+
+            .header .search-box input {
+                border: none;
+                background: none;
+                outline: none;
+                padding: 5px 10px;
+                width: 100%;
+            }
+
+            .header .search-box i {
+                color: #999;
+            }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+        .card .card-header {
+            background-color: transparent;
+            border-bottom: none;
+            font-weight: bold;
+        }
+
+        .card .card-body {
             padding: 20px;
         }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background-color: #fff;
-            border-bottom: 1px solid #ddd;
-        }
-
-            .header .search-box {
-                width: 300px;
-                display: flex;
-                align-items: center;
-                background-color: #f1f1f1;
-                border-radius: 20px;
-                padding: 5px 10px;
-            }
-
-                .header .search-box input {
-                    border: none;
-                    background: none;
-                    outline: none;
-                    padding: 5px 10px;
-                    width: 100%;
-                }
-
-                .header .search-box i {
-                    color: #999;
-                }
-
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-            .card .card-header {
-                background-color: transparent;
-                border-bottom: none;
-                font-weight: bold;
-            }
-
-            .card .card-body {
-                padding: 20px;
-            }
-    </style>
+</style>
 </head>
 <body>
     <div class="sidebar">
         <div class="logo">
-            <img src="path/to/logo.png" alt="Logo">
+            <img src="~/Images/logoMilktea1.png" alt="Logo" with="200" height="220">
         </div>
         <ul>
-            <li><a href="@Url.Action("Product","ProductAdmin", new{ area = "Admin" })"><i class="fas fa-home"></i> Trang Chủ</a></li>
+            <li><a href="@Url.Action("Index","StatisticalAdmin", new{ area = "Admin" })"><i class="fas fa-home"></i>Thống Kê</a></li>
+            <li><a href="@Url.Action("Product","ProductAdmin", new{ area = "Admin" })"><i class="fas fa-home"></i>Sản Phẩm</a></li>
             <li><a href="@Url.Action("Index","CategorieAdmin",new { area = "Admin" })"><i class="fas fa-copy"></i> Danh Mục</a></li>
             <li><a href="@Url.Action("Index","CustomerAdmin", new {area="Admin"})"><i class="fas fa-th"></i>Khách Hàng</a></li>
             <li><a href="@Url.Action("Index","OrderAdmin", new {area="Admin"})"><i class="fas fa-shopping-cart"></i> Đơn Hàng</a></li>
@@ -122,28 +125,32 @@
             <li><a href="@Url.Action("Index","PositionAdmin",new {area="Admin"})"><i class="fas fa-bell"></i>Chức Vụ</a></li>
             <li><a href="@Url.Action("Index","SupplierAdmin",new {area="Admin"})"><i class="fas fa-bell"></i>Nhà Cung Cấp</a></li>
             <li><a href="@Url.Action("Index","IngredientAdmin",new {area="Admin"})"><i class="fas fa-bell"></i>Nguyên liệu</a></li>
+            <li><a href="@Url.Action("Index","IngredientStockAdmin",new {area="Admin"})"><i class="fas fa-bell"></i>Thành phần kho</a></li>
             <li><a href="@Url.Action("Index","PromotionAdmin", new {area="Admin"})"><i class="fas fa-calendar-alt"></i>Giảm Giá</a></li>
-            <li><a href="#"><i class="fas fa-envelope"></i>Vận Chuyển</a></li>
-            <li><a href="#"><i class="fas fa-envelope"></i>Đánh Giá</a></li>
+            <li><a href="@Url.Action("Index","PromotionDetailAdmin", new {area="Admin"})"><i class="fas fa-calendar-alt"></i>Chi tiết giảm giá</a></li>
+         
         </ul>
     </div>
-    
+
     <div class="main-content">
         <div class="header">
             <div class="search-box">
-                <input type="text" placeholder="Search...">
-                <i class="fas fa-search"></i>
+                @*<input type="text" placeholder="Search...">
+                <i class="fas fa-search"></i>*@
             </div>
             <div>
                 <i class="fas fa-bell"></i>
-                <i class="fas fa-user"></i> Aiden Max
+                <i class="fas fa-user"></i> ANh Phe tà tữa
             </div>
         </div>
 
-        @RenderBody()
+        <main class="content">
+            @Html.Partial("_ThongBaoPartial")
+            @RenderBody()
+        </main>
 
     </div>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         var ctxRevenue = document.getElementById('revenueChart').getContext('2d');

@@ -29,6 +29,8 @@ namespace TeaShop.Models
         [Required]
         [StringLength(50)]
         public string OrderStatus { get; set; }
+        //Mới cập nhật
+        public string CancellationReason { get; set; } = string.Empty;
 
         [ForeignKey("CustomerID")]
         public virtual CustomerModel Customer { get; set; }

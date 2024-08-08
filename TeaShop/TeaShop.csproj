@@ -47,11 +47,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>..\packages\BouncyCastle.Cryptography.2.4.0\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.4, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.13.4\lib\net461\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.1\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
@@ -107,6 +113,15 @@
     </Reference>
     <Reference Include="Microsoft.SqlServer.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=23ec7fc2d6eaa4a5, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.SqlServer.Server.1.0.0\lib\net46\Microsoft.SqlServer.Server.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList, Version=1.17.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList.Mvc, Version=4.5.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Rotativa, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rotativa.1.7.3\lib\net461\Rotativa.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -223,28 +238,29 @@
     <Compile Include="Areas\Admin\Controllers\EmployeeAdminController.cs" />
     <Compile Include="Areas\Admin\Controllers\HomeAdminController.cs" />
     <Compile Include="Areas\Admin\Controllers\IngredientAdminController.cs" />
+    <Compile Include="Areas\Admin\Controllers\IngredientStockAdminController.cs" />
     <Compile Include="Areas\Admin\Controllers\OrderAdminController.cs" />
     <Compile Include="Areas\Admin\Controllers\PositionAdminController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductAdminController.cs" />
     <Compile Include="Areas\Admin\Controllers\PromotionAdminController.cs" />
     <Compile Include="Areas\Admin\Controllers\PromotionDetailAdminController.cs" />
+    <Compile Include="Areas\Admin\Controllers\StatisticalAdminController.cs" />
     <Compile Include="Areas\Admin\Controllers\SupplierAdminController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\IngredientStockController.cs" />
+    <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\OrderDetailController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202407240206463_Migrations.cs" />
-    <Compile Include="Migrations\202407240206463_Migrations.Designer.cs">
-      <DependentUpon>202407240206463_Migrations.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202407241053136_UpdateCartModel.cs" />
-    <Compile Include="Migrations\202407241053136_UpdateCartModel.Designer.cs">
-      <DependentUpon>202407241053136_UpdateCartModel.cs</DependentUpon>
+    <Compile Include="Migrations\202408050408176_Migrations.cs" />
+    <Compile Include="Migrations\202408050408176_Migrations.Designer.cs">
+      <DependentUpon>202408050408176_Migrations.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\CartDetailModel.cs" />
@@ -271,6 +287,7 @@
     <Compile Include="Models\SupplierModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Respository\DataContext.cs" />
+    <Compile Include="ViewModel\CartViewModel.cs" />
     <Compile Include="ViewModel\CateViewModel.cs" />
     <Compile Include="ViewModel\CreatePaymentViewModel.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
@@ -278,6 +295,7 @@
     <Compile Include="ViewModel\OrderViewModel.cs" />
     <Compile Include="ViewModel\PromotedProductViewModel.cs" />
     <Compile Include="ViewModel\PromotionViewModel.cs" />
+    <Compile Include="ViewModel\StatisticsViewModel.cs" />
     <Compile Include="VNPay\VNPayLib.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -297,6 +315,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\PagedList.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -310,9 +329,14 @@
     <Content Include="Public\css\Footer.css" />
     <Content Include="Public\css\Header.css" />
     <Content Include="Public\css\Home.css" />
+    <Content Include="Public\css\login.css" />
     <Content Include="Public\css\site.css" />
     <Content Include="Public\js\About.js" />
     <Content Include="Public\js\menu.js" />
+    <Content Include="Rotativa\help-wkhtmltoimage.txt" />
+    <Content Include="Rotativa\help-wkhtmltopdf.txt" />
+    <Content Include="Rotativa\wkhtmltoimage.exe" />
+    <Content Include="Rotativa\wkhtmltopdf.exe" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -334,6 +358,12 @@
     <Content Include="Areas\Admin\Views\SupplierAdmin\Index.cshtml" />
     <Content Include="Areas\Admin\Views\IngredientAdmin\Index.cshtml" />
     <Content Include="Areas\Admin\Views\PromotionAdmin\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\PromotionDetailAdmin\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\IngredientStockAdmin\Index.cshtml" />
+    <Content Include="App_Browsers\qt.browser" />
+    <Content Include="Areas\Admin\Views\OrderAdmin\Invoice.cshtml" />
+    <Content Include="Areas\Admin\Views\StatisticalAdmin\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_ThongBaoPartial.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -359,7 +389,6 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Category\GetCategory.cshtml" />
     <Content Include="Views\Product\Product.cshtml" />
@@ -373,12 +402,18 @@
     <Content Include="Views\Product\Cake.cshtml" />
     <Content Include="Views\Product\Juice.cshtml" />
     <Content Include="Views\Product\MilkTea.cshtml" />
+    <Content Include="Views\OrderDetail\Index.cshtml" />
+    <Content Include="Views\OrderDetail\OrderConfirmation.cshtml" />
+    <Content Include="Views\OrderDetail\Payment.cshtml" />
+    <Content Include="Views\Shared\_SearchResultsPartial.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Admin\Views\PromotionDetailAdmin\" />
     <Folder Include="Public\icons\" />
+    <Folder Include="Views\IngredientStock\" />
+    <Folder Include="Views\Order\" />
     <Folder Include="Views\Payment\" />
   </ItemGroup>
   <ItemGroup>
@@ -409,11 +444,8 @@
     <Content Include="Scripts\jquery-3.4.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202407240206463_Migrations.resx">
-      <DependentUpon>202407240206463_Migrations.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202407241053136_UpdateCartModel.resx">
-      <DependentUpon>202407241053136_UpdateCartModel.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202408050408176_Migrations.resx">
+      <DependentUpon>202408050408176_Migrations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

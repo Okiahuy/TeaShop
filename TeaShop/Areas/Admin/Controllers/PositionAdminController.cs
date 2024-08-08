@@ -36,6 +36,7 @@ namespace TeaShop.Areas.Admin.Controllers
                 position.PositionID=GenerateNewPositionID();
                 db.Positions.Add(position);
                 db.SaveChanges();
+                TempData["success"] = "Thêm chức vụ thành công!";
                 return RedirectToAction("Index", "PositionAdmin");
             }
             return View(position);
@@ -58,6 +59,7 @@ namespace TeaShop.Areas.Admin.Controllers
 
                 db.Entry(existingPosition).State = System.Data.Entity.EntityState.Modified;
                 db.SaveChanges();
+                TempData["success"] = "Sửa chức vụ thành công!";
                 return RedirectToAction("Index", "PositionAdmin");
             }
             return View(position);
@@ -73,7 +75,7 @@ namespace TeaShop.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-
+            TempData["success"] = "Xóa chức vụ thành công!";
             db.Positions.Remove(position);
             db.SaveChanges();
             return RedirectToAction("Index", "PositionAdmin");

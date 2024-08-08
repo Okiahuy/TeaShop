@@ -6,42 +6,97 @@
     var err = ViewBag.ErrCustomerID as string;
     Layout = "~/Areas/Admin/Views/Shared/_LayoutPage.cshtml";
 }
-<!-- Search Form -->
-@using (Html.BeginForm("Index", "CustomerAdmin", FormMethod.Get))
-{
-    <div class="form-group">
-        <label for="searchTerm">@err</label>
-        <label for="searchTerm">Search:</label>
-        <input type="text" id="searchCategoryName" name="CustomerName" placeholder="Search..." />
-        <button type="submit" class="btn btn-primary mt-2">Search</button>
-    </div>
-}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .table td, .table th {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table img {
+            display: block;
+            margin: 0 auto;
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+        .text-center {
+            vertical-align: middle !important;
+        }
+
+        .search-box {
+            width: 250px;
+            display: flex;
+            align-items: center;
+            background-color: #f1f1f1;
+            border-radius: 20px;
+            padding: 5px 10px;
+        }
+
+            .search-box input {
+                border: none;
+                background: none;
+                outline: none;
+                padding: 5px 10px;
+            }
+
+            .search-box i {
+                color: #999;
+            }
+    </style>
+</head>
+<body>
+    <!-- Search Form -->
+    @using (Html.BeginForm("Index", "CustomerAdmin", FormMethod.Get))
+    {
+        <div class="search-box">
+            <label for="searchTerm">@err</label>
+            <input type="text" id="searchCategoryName" name="CustomerName" placeholder="Search..." />
+            <button type="submit" style="border: none; background: none; float:right;">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    }
 
 
-<!-- Customer Table -->
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Mã Khách Hàng</th>
-            <th>Họ và Tên</th>
-            <th>Liên Lạc</th>
-            <th>Địa Chỉ Mail</th>
-            <th>Địa Chỉ Thường Trú</th>
-
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+    <br />
+    <!-- Customer Table -->
+    <table class="table table-striped">
+        <thead class="thead-dark">
             <tr>
-                <td>@item.CustomerID</td>
-                <td>@item.CustomerName</td>
-                <td>@item.Phone</td>
-                <td>@item.Email</td>
-                <td>@item.Address</td>
+                <th>Mã Khách Hàng</th>
+                <th>Họ và Tên</th>
+                <th>Liên Lạc</th>
+                <th>Địa Chỉ Mail</th>
+                <th>Địa Chỉ Thường Trú</th>
 
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.CustomerID</td>
+                    <td>@item.CustomerName</td>
+                    <td>@item.Phone</td>
+                    <td>@item.Email</td>
+                    <td>@item.Address</td>
 
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>

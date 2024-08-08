@@ -1,44 +1,49 @@
 ﻿@model TeaShop.Models.HomeViewModel
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>Home</title>
-    <link rel="stylesheet" type="text/css" href="~/Public/css/site.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    @*<script src="~/js/site.js"></script>*@
-</head>
-<body>
+
     <div class="menu">
         <div class="product-row">
             @foreach (var product in Model.ProductModels)
             {
-                <div class="khung1">
-                    <div class="ten1">@product.ProductName</div>
+                <div class="khungtrangchu">
+                    <div class="tentrangchu">@product.ProductName</div>
 
                     @{
-                           
-                            string relativeImagePath = "";
+                        var imageUrl = product.ImageURL;
+                        var imagePath = Path.Combine(Server.MapPath("~/Images"), Path.GetFileName(imageUrl));
+                        var otherImagePath = Path.Combine(Server.MapPath("~/Images/Others"), Path.GetFileName(imageUrl));
+                        var relativeImagePath = "";
 
-                           
-                            relativeImagePath = "~/Images/" + product.ImageURL.Replace("\\", "/");
-                         
+                        if (File.Exists(imagePath))
+                        {
+                            relativeImagePath = Url.Content("~/Images/" + Path.GetFileName(imageUrl));
+                        }
+                        else if (File.Exists(otherImagePath))
+                        {
+                            relativeImagePath = Url.Content("~/Images/Others/" + Path.GetFileName(imageUrl));
+                        }
+                        else
+                        {
+                            relativeImagePath = Url.Content("~/Images/default.png"); // Default image if none is found
+                        }
                     }
-                    
-                    <img class="hinhanh" src="@Url.Content(relativeImagePath)" alt="@product.Description" />
-                    <div class="in4_nuoc">
-                        <div class="price1">@string.Format("{0:N0}đ", product.Price) </div>
-                        <a href="#" class="dat1" data-toggle="modal" data-target="#productModal_@product.ProductID"
+                    <img class="hinhanhtrangchu"src="@relativeImagePath" alt="Product Image" />
+                    @*<img class="hinhanhtrangchu" src="@Url.Content(relativeImagePath)" alt="@product.Description" />*@
+                    <div class="in4_nuoctrangchu">
+                        <div class="pricetrangchu">@string.Format("{0:N0}đ", product.Price) </div>
+                        <a href="#" class="dattrangchu" data-toggle="modal" data-target="#productModal_@product.ProductID"
                            data-name="@product.ProductName"
                            data-subtitle="Lime Black Tea"
                            data-image-url="/Images/@product.ImageURL"
                            data-price="@string.Format("{0:N0}đ", product.Price)">ĐẶT NƯỚC</a>
                     </div>
-                </div>
+                </div>  
             }
         </div>
     </div>
+
+
+
 
 
     @foreach (var product in Model.ProductModels)
@@ -58,32 +63,48 @@
                             {
                                 <div class="col-ms-6">
                                     @{
+                                        var imageUrl = product.ImageURL;
+                                        var imagePath = Path.Combine(Server.MapPath("~/Images"), Path.GetFileName(imageUrl));
+                                        var otherImagePath = Path.Combine(Server.MapPath("~/Images/Others"), Path.GetFileName(imageUrl));
+                                        var relativeImagePath = "";
 
-
-                                        string relativeImagePath = "";
-
-
-                                        string imagePath = Path.Combine(product.ImageURL);
-                                       
-                                            relativeImagePath = "~/Images/" + Path.GetFileName(imagePath).Replace("\\", "/");
-
-
-                                        
+                                        if (File.Exists(imagePath))
+                                        {
+                                            relativeImagePath = Url.Content("~/Images/" + Path.GetFileName(imageUrl));
+                                        }
+                                        else if (File.Exists(otherImagePath))
+                                        {
+                                            relativeImagePath = Url.Content("~/Images/Others/" + Path.GetFileName(imageUrl));
+                                        }
+                                        else
+                                        {
+                                            relativeImagePath = Url.Content("~/Images/default.png"); // Default image if none is found
+                                        }
                                     }
-                                    <img id="productImage" src="@Url.Content(relativeImagePath)" alt="@product.Description" class="img-fluid ms-3" style="max-width: 450px; max-height: 700px;" />
+                                    <img class="hinhanhtrangchu" src="@relativeImagePath" alt="Product Image" />
+
+
                                     <p id="productSubtitle">@product.ProductName</p>
                                 </div>
                                 <div class="col-ms-6">
                                     @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
                                     {
-                                        @Html.AntiForgeryToken()
+                            @Html.AntiForgeryToken()
                                         @Html.Hidden("ProductID", product.ProductID)
+
+                                        @*foreach (var items in Model.Ingredients)
+                                            {
+                                                <div class="form-group">
+                                                    <label for="Size">Nguyên liệu gồm có: @items.IngredientName</label>
+                                                </div>
+                                            }*@
+
                                         <div class="form-group">
                                             <label for="Size">Kích cỡ:</label>
                                             <div id="Size">
-                                                <label><input type="radio" name="Size" value="Hot" checked> Hot</label>
-                                                <label><input type="radio" name="Size" value="Ice regular size"> Ice regular size</label>
-                                                <label><input type="radio" name="Size" value="Big size ice"> Big size ice</label>
+                                                <label><input type="radio" name="Size" value="Hot" checked>Size nhỏ</label>
+                                                <label><input type="radio" name="Size" value="Ice regular size">Size vừa</label>
+                                                <label><input type="radio" name="Size" value="Big size ice">Size lớn</label>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -123,9 +144,4 @@
         </div>
     }
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-</body>
-</html>

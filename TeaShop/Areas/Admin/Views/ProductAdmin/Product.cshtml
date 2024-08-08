@@ -2,8 +2,10 @@
     ViewBag.Title = "Product";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutPage.cshtml";
 }
-
-@model IEnumerable<TeaShop.Models.ProductModel>
+@using PagedList;
+@using PagedList.Mvc;
+@using System.IO;
+@model IPagedList<TeaShop.Models.ProductModel>
 
 <!DOCTYPE html>
 <html>
@@ -53,14 +55,15 @@
 </head>
 <body>
 
-    <div class="container">
+ 
         <div class="row mb-3">
             <div class="col-md-4">
                 <div class="search-box">
-                    @using (Html.BeginForm("Searchs", "ProductAdmin", FormMethod.Get, new { @class = "form-inline" }))
+                    @using (Html.BeginForm("Product", "ProductAdmin", FormMethod.Get, new { @class = "form-inline" }))
                     {
-                        <input type="text" id="searchProductName" name="ProductName" placeholder="Search..." />
-                        <button type="submit" style="border: none; background: none; padding: 0;">
+                       
+                        <input type="text" id="searchCategoryName" name="ProductName" placeholder="Search..." value="@ViewBag.CurrentFilter"/>
+                        <button type="submit" style="border: none; background: none; ">
                             <i class="fas fa-search"></i>
                         </button>
                     }
@@ -68,12 +71,19 @@
             </div>
 
             <div class="col-md-2">
-                <button class="btn btn-primary" data-toggle="modal" data-target="#createModal">Add New Product</button>
+               
             </div>
         </div>
 
+
         <table class="table text-center table-striped">
-            <thead>
+            <thead class="thead-dark">
+                <tr>
+                    <div class="col-md-2">
+                        <button class="btn btn-success" data-toggle="modal" data-target="#createModal">Thêm sản phẩm</button>
+                    </div>
+                    </tr>
+                <br />
                 <tr>
                     <th>Mã Sản Phẩm</th>
                     <th>Tên Sản Phẩm</th>
@@ -105,30 +115,85 @@
                             <td>@item.Description</td>
                             <td>
                                 @{
-                                    string relativeImagePath = "";
-                                    string imagePath = Path.Combine(item.ImageURL);
-                                    relativeImagePath = "~/Images/" + Path.GetFileName(imagePath).Replace("\\", "/");
+                                    var imageUrl = item.ImageURL;
+                                    var imagePath = Path.Combine(Server.MapPath("~/Images"), Path.GetFileName(imageUrl));
+                                    var otherImagePath = Path.Combine(Server.MapPath("~/Images/Others"), Path.GetFileName(imageUrl));
+                                    var relativeImagePath = "";
 
-                                    <img src="@Url.Content(relativeImagePath)" alt="Product Image" />
-
+                                    if (File.Exists(imagePath))
+                                    {
+                                        relativeImagePath = Url.Content("~/Images/" + Path.GetFileName(imageUrl));
+                                    }
+                                    else if (File.Exists(otherImagePath))
+                                    {
+                                        relativeImagePath = Url.Content("~/Images/Others/" + Path.GetFileName(imageUrl));
+                                    }
+                                    else
+                                    {
+                                        relativeImagePath = Url.Content("~/Images/default.png"); // Default image if none is found
+                                    }
                                 }
+                                <img src="@relativeImagePath" alt="Product Image" />
                             </td>
-
-
-
                             <td>
-
-
-
-                                <button class="btn btn-warning" data-toggle="modal" data-target="#editModal_@item.ProductID" data-id="@item.ProductID">Edit</button>
-                                <button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal_@item.ProductID">Delete</button>
+                                <button class="btn btn-warning" data-toggle="modal" data-target="#editModal_@item.ProductID" data-id="@item.ProductID">Sửa</button>
+                                <button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal_@item.ProductID">Xóa</button>
                             </td>
                         </tr>
                     }
                 }
             </tbody>
         </table>
-    </div>
+
+        <!-- Pagination Controls -->
+        <div class="container mt-3">
+            @if (Model.PageCount > 1)
+            {
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        @if (Model.HasPreviousPage)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Product", new { page = Model.PageNumber - 1, searchProductName = Request.QueryString["searchProductName"] })" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;</span>
+                            </li>
+                        }
+
+                        @for (int i = 1; i <= Model.PageCount; i++)
+                        {
+                            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Product", new { page = i, searchProductName = Request.QueryString["searchProductName"] })">@i</a>
+                            </li>
+                        }
+
+                        @if (Model.HasNextPage)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Product", new { page = Model.PageNumber + 1, searchProductName = Request.QueryString["searchProductName"] })" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;</span>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }
+        </div>
+  
 
 
     <!-- Create Modal -->
@@ -136,7 +201,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createModalLabel">Add New Product</h5>
+                    <h5 class="modal-title" id="createModalLabel">Thêm mới sản phẩm</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -156,7 +221,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editModalLabel_@item.ProductID">Edit Product</h5>
+                        <h5 class="modal-title" id="editModalLabel_@item.ProductID">Sửa</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -168,38 +233,45 @@
                         <div class="modal-body">
                             <input type="hidden" name="ProductID" value="@item.ProductID" />
                             <div class="form-group">
-                                <label for="ProductName" class="control-label">Product Name</label>
+                                <label for="ProductName" class="control-label">Tên sản phẩm</label>
                                 <input type="text" name="ProductName" class="form-control" value="@item.ProductName" required />
                             </div>
                             <div class="form-group">
-                                <label for="CategoryID" class="control-label">Category</label>
+                                <label for="CategoryID" class="control-label">Loại</label>
                                 @Html.DropDownList("CategoryID", (SelectList)ViewBag.Categories, "Select Category", new { @class = "form-control", @value = item.CategoryID, @required = "required" })
 
                             </div>
+
                             <div class="form-group">
-                                <label for="Price" class="control-label">Price</label>
-                                <input type="number" name="Price" class="form-control" value="@string.Format("{0:N0}đ", item.Price)" required />
+                                <label for="Price" class="control-label">Giá</label>
+                                <input type="text" name="Price" class="form-control" value="@string.Format("{0:N0}", item.Price) đ" required />
                             </div>
                             <div class="form-group">
-                                <label for="Stock" class="control-label">Stock</label>
+                                <label for="Stock" class="control-label">SL</label>
                                 <input type="number" name="Stock" class="form-control" value="@item.Stock" required />
                             </div>
                             <div class="form-group">
-                                <label for="Description" class="control-label">Description</label>
+                                <label for="Description" class="control-label">Mô tả</label>
                                 <textarea name="Description" class="form-control" required>@item.Description</textarea>
                             </div>
                             <div class="form-group">
-                                <label for="ImageFile" class="control-label">Image</label>
+                                <label for="ImageFile" class="control-label">Hình ảnh</label>
                                 <input type="file" name="ImageFile" class="form-control" />
                                 @if (!string.IsNullOrEmpty(item.ImageURL))
                                 {
-                                    <img src="@Url.Content("~/Images/" + item.ImageURL)" alt="Product Image" style="max-width:100px;max-height:100px;" />
+                                    <div class="mt-2">
+                                        <img src="@ViewBag.ImageURL" alt="Product Image" style="max-width:100px;max-height:100px;" />
+                                        <p>Current Image</p>
+                                    </div>
                                 }
+
                             </div>
+
                         </div>
+
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save changes</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary">Lưu</button>
                         </div>
                     }
                 </div>
@@ -214,7 +286,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel_@item.ProductID">Delete Product</h5>
+                        <h5 class="modal-title" id="deleteModalLabel_@item.ProductID">Xóa</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>

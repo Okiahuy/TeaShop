@@ -1,0 +1,163 @@
+﻿@model TeaShop.ViewModel.OrderViewModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Invoice</title>
+    <style>
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            font-size: 16px;
+            line-height: 24px;
+            font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+            color: #555;
+        }
+
+            .invoice-box table {
+                width: 100%;
+                line-height: inherit;
+                text-align: left;
+            }
+
+                .invoice-box table td {
+                    padding: 5px;
+                    vertical-align: top;
+                }
+
+                .invoice-box table tr td:nth-child(2) {
+                    text-align: right;
+                }
+
+                .invoice-box table tr.top table td {
+                    padding-bottom: 20px;
+                }
+
+                    .invoice-box table tr.top table td.title {
+                        font-size: 45px;
+                        line-height: 45px;
+                        color: #333;
+                    }
+
+                .invoice-box table tr.information table td {
+                    padding-bottom: 40px;
+                }
+
+                .invoice-box table tr.heading td {
+                    background: #eee;
+                    border-bottom: 1px solid #ddd;
+                    font-weight: bold;
+                }
+
+                .invoice-box table tr.details td {
+                    padding-bottom: 20px;
+                }
+
+                .invoice-box table tr.item td {
+                    border-bottom: 1px solid #eee;
+                }
+
+                .invoice-box table tr.item.last td {
+                    border-bottom: none;
+                }
+
+                .invoice-box table tr.total td:nth-child(2) {
+                    border-top: 2px solid #eee;
+                    font-weight: bold;
+                }
+        .table td, .table th {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table img {
+            display: block;
+            margin: 0 auto;
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+        .text-center {
+            vertical-align: middle !important;
+        }
+
+        .search-box {
+            width: 250px;
+            display: flex;
+            align-items: center;
+            background-color: #f1f1f1;
+            border-radius: 20px;
+            padding: 5px 10px;
+        }
+
+            .search-box input {
+                border: none;
+                background: none;
+                outline: none;
+                padding: 5px 10px;
+            }
+
+            .search-box i {
+                color: #999;
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                <h2>Hóa Đơn</h2>
+                            </td>
+
+                            <td>
+                                Mã Đơn: @Model.OrderID<br />
+                                Ngày: @Model.OrderDate.ToString("dd/MM/yyyy")<br />
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="information">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td>
+                                Tên Khách Hàng: @Model.CustomerName<br />
+                                Địa Chỉ: @Model.Address<br />
+                                Số Điện Thoại: @Model.Phone<br />
+                                Email: @Model.Email<br />
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="heading">
+                <td>Sản Phẩm</td>
+                <td>Giá</td>
+            </tr>
+
+            @foreach (var item in Model.OrderItems)
+            {
+                <tr class="item">
+                    <td>@item.ProductID (x @item.Quantity)</td>
+                    <td>@String.Format("{0:0,0}", item.UnitPrice * item.Quantity) VND</td>
+                </tr>
+            }
+
+            <tr class="total">
+                <td></td>
+                <td>Tổng Cộng: @String.Format("{0:0,0}", Model.TotalAmount) VND</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

@@ -19,6 +19,8 @@ namespace TeaShop.Models
         public List<CategorieModel> CategoryList { get; set; }
 
         public List<PromotedProductViewModel> PromotedProducts { get; set; }
+
+        public List<IngredientModel> Ingredients { get; set; }
     }
 
 }

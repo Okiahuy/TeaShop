@@ -41,6 +41,7 @@ namespace TeaShop.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 promotion.PromotionID = GeneratePromotionID();
+                TempData["success"] = "Thêm khuyến mãi thành công!";
                 _context.Promotions.Add(promotion);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
@@ -73,6 +74,7 @@ namespace TeaShop.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                TempData["success"] = "Sửa khuyến mãi thành công!";
                 _context.Entry(promotion).State = System.Data.Entity.EntityState.Modified;
                 _context.SaveChanges();
                 return RedirectToAction("Index");
@@ -91,7 +93,7 @@ namespace TeaShop.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-
+            TempData["success"] = "Xóa khuyến mãi thành công!";
             _context.Promotions.Remove(promotion);
             _context.SaveChanges();
             return RedirectToAction("Index");

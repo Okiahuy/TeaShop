@@ -12,16 +12,7 @@
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-html {
-    position: relative;
-    min-height: 100%;
-}
-
-body {
-    margin-bottom: 60px;
-}
-
-.ten1 {
+.tentrangchu {
     padding: 5px;
     font-weight: bold;
     font-size: 20px;
@@ -41,7 +32,7 @@ body {
     width: 100%;
 }
 
-.khung1 {
+.khungtrangchu {
     flex: 0 0 23%;
     height: 390px;
     background-color: white;
@@ -49,12 +40,12 @@ body {
     transition: box-shadow 0.3s ease;
 }
 
-    .khung1:hover {
-        border: 1px solid #dcdcdc;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
+.khungtrangchu:hover {
+    border: 1px solid #dcdcdc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 
-.price1 {
+.pricetrangchu {
     padding: 5px;
     font-weight: bold;
     font-size: 20px;
@@ -62,7 +53,7 @@ body {
     text-align: center;
 }
 
-.dat1 {
+.dattrangchu {
     width: 129px;
     height: 42px;
     border-radius: 5px;
@@ -79,7 +70,7 @@ body {
     justify-content: center;
 }
 
-    .dat1:before {
+    .dattrangchu:before {
         content: "";
         position: absolute;
         top: 0;
@@ -92,31 +83,66 @@ body {
         text-decoration: none;
     }
 
-    .dat1:hover:before, .dat1:active:before {
+    .dattrangchu:hover:before, .dattrangchu:active:before {
         left: 0;
     }
 
-    .dat1:hover, .dat1:active {
+    .dattrangchu:hover, .dattrangchu:active {
         color: white;
         z-index: 1;
     }
 
-.hinhanh {
-    width: 78%;
+.hinhanhtrangchu {
+    width: 200px;
     height: 250px;
     text-align: center;
     margin-left: 10px;
     transition: transform 0.5s ease, box-shadow 0.5s ease;
 }
 
-    .hinhanh:hover {
-        transform: rotate(10deg);
-        filter: brightness(1.2);
-        filter: drop-shadow(4px 10px rgba(0, 0, 0, 0.3));
-    }
+.hinhanhtrangchu:hover {
+    transform: rotate(10deg);
+    filter: brightness(1.2);
+    filter: drop-shadow(4px 10px rgba(0, 0, 0, 0.3));
+}
 
-.in4_nuoc {
+.in4_nuoctrangchu {
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: red; /* Màu đỏ cho giá gạch ngang */
+    margin-right: 5px; /* Khoảng cách với giá giảm giá */
+}
+
+.discounted-price {
+    color: black; /* Màu xanh cho giá đã giảm */
+}
+
+.triangle {
+    position: relative;
+    display: inline-block;
+}
+
+.discount-badge {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    color: white;
+    background-color: red;
+    padding: 3px 8px;
+    font-size: 12px;
+}
+
+#hinhanhkhuyenmaitrangchu {
+    width: 200px;
+    height: 250px;
+    text-align: center;
+    padding-left: 20px;
+    position: relative;
+    left: 35px;
+    transition: transform 0.5s ease, box-shadow 0.5s ease;
 }

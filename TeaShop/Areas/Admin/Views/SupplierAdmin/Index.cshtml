@@ -1,24 +1,73 @@
-﻿    @{
-        Layout = "~/Areas/Admin/Views/Shared/_LayoutPage.cshtml";
-    }
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutPage.cshtml";
+}
 
-    @model IEnumerable<TeaShop.Models.SupplierModel>
+@model IEnumerable<TeaShop.Models.SupplierModel>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .table td, .table th {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table img {
+            display: block;
+            margin: 0 auto;
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+        .text-center {
+            vertical-align: middle !important;
+        }
+
+        .search-box {
+            width: 250px;
+            display: flex;
+            align-items: center;
+            background-color: #f1f1f1;
+            border-radius: 20px;
+            padding: 5px 10px;
+        }
+
+            .search-box input {
+                border: none;
+                background: none;
+                outline: none;
+                padding: 5px 10px;
+            }
+
+            .search-box i {
+                color: #999;
+            }
+    </style>
+</head>
+<body>
+
 
     <!-- Search Form -->
     @using (Html.BeginForm("Index", "SupplierAdmin", FormMethod.Get))
     {
-        <div>
+        <div class="search-box">
             <input type="text" id="searchString" name="searchString" placeholder="Tìm kiếm nhà cung cấp" />
-            <input type="submit" value="Search" class="btn btn-primary" />
+            <button type="submit" style="border: none; background: none; float:right;">
+                <i class="fas fa-search"></i>
+            </button>
         </div>
     }
-
+    <br />
     <!-- Button to Open the Create Modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">Thêm nhà cung cấp</button>
-
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createModal">Thêm nhà cung cấp</button>
+    <br />
+    <br />
     <!-- Suppliers Table -->
     <table class="table table-striped">
-        <thead>
+        <thead class="thead-dark">
             <tr>
                 <th>Tên nhà cung cấp</th>
                 <th>Số điện thoại</th>
@@ -36,7 +85,7 @@
                     <td>@item.Email</td>
                     <td>@item.Address</td>
                     <td>
-                        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editModal_@item.SupplierID">Sửa</button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal_@item.SupplierID">Sửa</button>
                         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal_@item.SupplierID">Xóa</button>
                     </td>
                 </tr>
@@ -85,8 +134,8 @@
         </div>
     </div>
 
-        @foreach (var item in Model)
-        {
+    @foreach (var item in Model)
+    {
         <!-- Edit Modal -->
         <div id="editModal_@item.SupplierID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -158,3 +207,12 @@
             </div>
         </div>
     }
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>

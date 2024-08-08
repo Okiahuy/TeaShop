@@ -40,6 +40,7 @@ namespace TeaShop.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                TempData["success"] = "Thêm nguyên liệu thành công!";
                 ingredient.IngredientID = GenerateIngredientID();
                 _context.Ingredients.Add(ingredient);
                 _context.SaveChanges();
@@ -76,6 +77,7 @@ namespace TeaShop.Areas.Admin.Controllers
          
             if (ModelState.IsValid)
             {
+                TempData["success"] = "Sửa nguyên liệu thành công!";
                 _context.Entry(ingredient).State = System.Data.Entity.EntityState.Modified;
                 _context.SaveChanges();
                 return RedirectToAction("Index");
@@ -90,6 +92,7 @@ namespace TeaShop.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(string IngredientID)
         {
+            TempData["success"] = "Xóa nguyên liệu thành công!";
             var ingredient = _context.Ingredients.Find(IngredientID);
             if (ingredient == null)
             {

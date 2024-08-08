@@ -5,211 +5,265 @@
 
 @model IEnumerable<TeaShop.Models.EmployeeModel>
 
-
-
-
-
-<!-- Search Form -->
-@using (Html.BeginForm("Index", "EmployeeAdmin", FormMethod.Get))
-{
-    <div>
-       
-        <input type="text" id="searchString" name="searchString" />
-        <input type="submit" value="Search" />
-    </div>
-}
-
-<!-- Button to Open the Create Modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">Thêm nhân viên</button>
-
-<!-- Employees Table -->
-<table class="table">
-    <thead>
-        <tr>
-            <th>Tên nhân viên</th>
-            <th>Chức vụ</th>
-            <th>Số điện thoại</th>
-            <th>Địa chỉ email</th>
-            <th>Địa chỉ thường trú</th>
-            <th>Ngày vào làm</th>
-            <th>Tên đăng nhập</th>
-            <th>Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.EmployeeName</td>
-                <td>@item.Position.PositionName</td>
-                <td>@item.Phone</td>
-                <td>@item.Email</td>
-                <td>@item.Address</td>
-                <td>@item.HireDate.ToString("yyyy-MM-dd")</td>
-                <td>@item.Username</td>
-
-                <td>
-                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#editModal_@item.EmployeeID">Edit</button>
-                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal_@item.EmployeeID">Delete</button>
-                </td>
-            </tr>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .table td, .table th {
+            vertical-align: middle;
+            text-align: center;
         }
-    </tbody>
-</table>
 
-@foreach (var item in Model)
-{
+        .table img {
+            display: block;
+            margin: 0 auto;
+            max-width: 100px;
+            max-height: 100px;
+        }
 
-    <!-- Create Modal -->
-    <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                @using (Html.BeginForm("Create", "EmployeeAdmin", FormMethod.Post, new { id = "createForm", area = "Admin" }))
-                {
-                    @Html.AntiForgeryToken()
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="createModalLabel">Thêm Nhân Viên</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="createEmployeeName">Tên Nhân Viên</label>
-                            <input type="text" id="createEmployeeName" name="EmployeeName" class="form-control" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="createPositionID">Chức Vụ</label>
+        .text-center {
+            vertical-align: middle !important;
+        }
 
-                            @Html.DropDownList("PositionID", (SelectList)ViewBag.PositionList, "Chọn", new { @class = "form-control", @required = "required" })
-                        </div>
-                        <div class="form-group">
-                            <label for="createPhone">Số điện thoại</label>
-                            <input type="text" id="createPhone" name="Phone" class="form-control" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="createEmail">Địa chỉ email</label>
-                            <input type="text" id="createEmail" name="Email" class="form-control" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="createAddress">Địa chỉ thường trú</label>
-                            <input type="text" id="createAddress" name="Address" class="form-control" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="createHireDate">Ngày làm</label>
-                            <input type="date" id="createHireDate" name="HireDate" class="form-control" required />
-                           
-                        </div>
-                        <div class="form-group">
-                            <label for="createUsername">Tài khoản</label>
-                            <input type="text" id="createUsername" name="Username" class="form-control" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="createPassword">Mật khẩu</label>
-                            <input type="password" id="createPassword" name="Password" class="form-control" required />
-                        </div>
+        .search-box {
+            width: 250px;
+            display: flex;
+            align-items: center;
+            background-color: #f1f1f1;
+            border-radius: 20px;
+            padding: 5px 10px;
+        }
 
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                        <button type="submit" class="btn btn-primary">Thêm Mới</button>
-                    </div>
-                }
-            </div>
+            .search-box input {
+                border: none;
+                background: none;
+                outline: none;
+                padding: 5px 10px;
+            }
+
+            .search-box i {
+                color: #999;
+            }
+    </style>
+</head>
+<body>
+
+
+
+    <!-- Search Form -->
+    @using (Html.BeginForm("Index", "EmployeeAdmin", FormMethod.Get))
+    {
+        <div class="search-box">
+
+            <input type="text" id="searchString" name="searchString" placeholder="Search..." />
+            <button type="submit" style="border: none; background: none; float:right;">
+                <i class="fas fa-search"></i>
+            </button>
         </div>
-    </div>
-}
+    }
+    <br />
+    <!-- Button to Open the Create Modal -->
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createModal">Thêm nhân viên</button>
+    <br />
+    <br />
+    <!-- Employees Table -->
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>Tên nhân viên</th>
+                <th>Chức vụ</th>
+                <th>Số điện thoại</th>
+                <th>Địa chỉ email</th>
+                <th>Địa chỉ thường trú</th>
+                <th>Ngày vào làm</th>
+                <th>Tên đăng nhập</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.EmployeeName</td>
+                    <td>@item.Position.PositionName</td>
+                    <td>@item.Phone</td>
+                    <td>@item.Email</td>
+                    <td>@item.Address</td>
+                    <td>@item.HireDate.ToString("yyyy-MM-dd")</td>
+                    <td>@item.Username</td>
 
-@foreach (var item in Model)
-{
-    <!-- Edit Modal -->
-    <div id="editModal_@item.EmployeeID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                @using (Html.BeginForm("Edit", "EmployeeAdmin", FormMethod.Post, new { id = "editForm", area = "Admin" }))
-                {
-                    @Html.AntiForgeryToken()
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editModalLabel">Cập Nhật Thông Tin Nhân Viên</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" id="editEmployeeID" name="EmployeeID" value="@item.EmployeeID" />
-                        <div class="form-group">
-                            <label for="editEmployeeName">Tên nhân viên</label>
-                            <input type="text" id="editEmployeeName" name="EmployeeName" value="@item.EmployeeName" class="form-control" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="editPositionID">Chức vụ</label>
-                            @Html.DropDownList("PositionID", (SelectList)ViewBag.PositionList, "Chọn", new { @class = "form-control", @value = item.PositionID, @required = "required" })
-                        </div>
-                        <div class="form-group">
-                            <label for="editPhone">Số điện thoại</label>
-                            <input type="text" id="editPhone" name="Phone" value="@item.Phone" class="form-control" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="editEmail">Địa chỉ email</label>
-                            <input type="text" id="editEmail" name="Email" value="@item.Email" class="form-control" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="editAddress">Địa chỉ thường trú</label>
-                            <input type="text" id="editAddress" name="Address" value="@item.Address" class="form-control" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="editHireDate">Ngày làm</label>
-                            <input type="date" id="editHireDate" name="HireDate" value="@item.HireDate" class="form-control" required />
+                    <td>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal_@item.EmployeeID">Sửa</button>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal_@item.EmployeeID">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-                        </div>
-                        <div class="form-group">
-                            <label for="editUsername">Tài khoản</label>
-                            <input type="text" id="editUsername" name="Username" val class="form-control" required />
-                        </div>
-                        <div class="form-group">
-                            <label for="editPassword">Mật khẩu</label>
-                            <input type="password" id="editPassword" name="Password" class="form-control" required />
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                        <button type="submit" class="btn btn-primary">Cập Nhật</button>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-}
-@foreach (var item in Model)
-{
-    <!-- Delete Modal -->
-    <div id="deleteModal_@item.EmployeeID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Xóa Thông Tin Nhân Viên</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                        <p>Bạn có chắc muốn xóa nhân viên @item.EmployeeName?</p>
-                </div>
+   @* @foreach (var item in Model)
+    {*@
 
-                <div class="modal-footer">
-                    @using (Html.BeginForm("DeleteConfirm", "EmployeeAdmin", FormMethod.Post, new { id = item.EmployeeID }))
+        <!-- Create Modal -->
+        <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    @using (Html.BeginForm("Create", "EmployeeAdmin", FormMethod.Post, new { id = "createForm", area = "Admin" }))
                     {
                         @Html.AntiForgeryToken()
-                        <input type="hidden" id="EmployeeID" name="EmployeeID" value="@item.EmployeeID" />
-                      
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-                        <button type="submit" class="btn btn-danger">Xóa</button>
-                    }
-                    </div>
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="createModalLabel">Thêm Nhân Viên</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="createEmployeeName">Tên Nhân Viên</label>
+                                <input type="text" id="createEmployeeName" name="EmployeeName" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="createPositionID">Chức Vụ</label>
 
+                                @Html.DropDownList("PositionID", (SelectList)ViewBag.PositionList, "Chọn", new { @class = "form-control", @required = "required" })
+                            </div>
+                            <div class="form-group">
+                                <label for="createPhone">Số điện thoại</label>
+                                <input type="text" id="createPhone" name="Phone" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="createEmail">Địa chỉ email</label>
+                                <input type="text" id="createEmail" name="Email" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="createAddress">Địa chỉ thường trú</label>
+                                <input type="text" id="createAddress" name="Address" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="createHireDate">Ngày làm</label>
+                                <input type="date" id="createHireDate" name="HireDate" class="form-control" required />
+
+                            </div>
+                            <div class="form-group">
+                                <label for="createUsername">Tài khoản</label>
+                                <input type="text" id="createUsername" name="Username" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="createPassword">Mật khẩu</label>
+                                <input type="password" id="createPassword" name="Password" class="form-control" required />
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary">Thêm Mới</button>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
-    </div>
-}
+    
+
+    @foreach (var item in Model)
+    {
+        <!-- Edit Modal -->
+        <div id="editModal_@item.EmployeeID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    @using (Html.BeginForm("Edit", "EmployeeAdmin", FormMethod.Post, new { id = "editForm", area = "Admin" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModalLabel">Cập Nhật Thông Tin Nhân Viên</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="editEmployeeID" name="EmployeeID" value="@item.EmployeeID" />
+                            <div class="form-group">
+                                <label for="editEmployeeName">Tên nhân viên</label>
+                                <input type="text" id="editEmployeeName" name="EmployeeName" value="@item.EmployeeName" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="editPositionID">Chức vụ</label>
+                                @Html.DropDownList("PositionID", (SelectList)ViewBag.PositionList, "Chọn", new { @class = "form-control", @value = item.PositionID, @required = "required" })
+                            </div>
+                            <div class="form-group">
+                                <label for="editPhone">Số điện thoại</label>
+                                <input type="text" id="editPhone" name="Phone" value="@item.Phone" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="editEmail">Địa chỉ email</label>
+                                <input type="text" id="editEmail" name="Email" value="@item.Email" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="editAddress">Địa chỉ thường trú</label>
+                                <input type="text" id="editAddress" name="Address" value="@item.Address" class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="editHireDate">Ngày làm</label>
+                                <input type="date" id="editHireDate" name="HireDate" value="@item.HireDate" class="form-control" required />
+
+                            </div>
+                            <div class="form-group">
+                                <label for="editUsername">Tài khoản</label>
+                                <input type="text" id="editUsername" name="Username" val class="form-control" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="editPassword">Mật khẩu</label>
+                                <input type="password" id="editPassword" name="Password" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary">Cập Nhật</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    @foreach (var item in Model)
+    {
+        <!-- Delete Modal -->
+        <div id="deleteModal_@item.EmployeeID" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Xóa Thông Tin Nhân Viên</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc muốn xóa nhân viên @item.EmployeeName?</p>
+                    </div>
+
+                    <div class="modal-footer">
+                        @using (Html.BeginForm("DeleteConfirm", "EmployeeAdmin", FormMethod.Post, new { id = item.EmployeeID }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" id="EmployeeID" name="EmployeeID" value="@item.EmployeeID" />
+
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-danger">Xóa</button>
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
 
 
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>

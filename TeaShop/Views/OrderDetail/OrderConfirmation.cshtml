@@ -1,0 +1,112 @@
+﻿@model List<TeaShop.ViewModel.OrderViewModel>
+
+@{
+    ViewBag.Title = "Xác nhận đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="text-center">Đơn hàng của tôi</h2>
+
+<div class="order-confirmation">
+    @foreach (var order in Model)
+    {
+        var orderClass = order.IsLatestOrder ? "latest-order" : "previous-order";
+
+        <div class="order @orderClass border-danger">
+            <h4>Thông tin đơn hàng - Order ID: @order.OrderID</h4>
+            <table class="table">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Giá</th>
+                        <th>Thành tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in order.OrderItems)
+                    {
+                        <tr>
+                            <td>@item.ProductName</td>
+                            <td>@item.Quantity</td>
+                            <td>@string.Format("{0:N0}đ", item.UnitPrice)</td>
+                            <td>@string.Format("{0:N0}đ", (item.Quantity * item.UnitPrice))</td>
+                            <td>
+                                @order.OrderStatus
+                            </td>
+
+                            <td>
+                                @if (order.OrderStatus.Equals("Chờ xử lý"))
+                                {
+                                    <button class="btn btn-danger" data-toggle="modal" data-target="#cancelOrderModal_@order.OrderID">Hủy đơn hàng</button>
+                                }
+                                else if (order.OrderStatus.Equals("Đang vận chuyển"))
+                                {
+                                    using (Html.BeginForm("ConfirmReceipt", "Order", FormMethod.Post, new { id = "confirmReceiptForm_" + order.OrderID }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="OrderID" value="@order.OrderID" />
+                                        <button type="submit" class="btn btn-success btn-sm">Đã nhận</button>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="form-group">
+                <label for="totalAmount">Tổng số tiền:</label>
+                <input type="text" id="totalAmount" class="form-control" value="@string.Format("{0:N0}đ", order.TotalAmount)" readonly />
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Modal -->
+@foreach (var order in Model)
+{
+    if (order.OrderStatus.Equals("Chờ xử lý"))
+    {
+        <div class="modal fade" id="cancelOrderModal_@order.OrderID" tabindex="-1" role="dialog" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelOrderModalLabel">Hủy Đơn Hàng</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    @using (Html.BeginForm("CancelOrder", "Order", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="modal-body">
+                            <input type="hidden" id="orderId" name="OrderID" value="@order.OrderID" />
+                            <div class="form-group">
+                                <label for="cancellationReason">Lý do hủy đơn hàng</label>
+                                <textarea class="form-control" id="cancellationReason" name="CancellationReason" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-danger">Hủy đơn hàng</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+
+<style>
+    .latest-order {
+        background-color: #dff0d8;
+        border: 2px solid #3c763d;
+    }
+
+    .previous-order {
+        background-color: #f5f5f5;
+    }
+</style>

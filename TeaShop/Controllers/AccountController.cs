@@ -54,7 +54,6 @@ namespace TeaShop.Controllers
                 return builder.ToString();
             }
         }
-
         // Hàm xử lý đăng nhập
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -74,14 +73,33 @@ namespace TeaShop.Controllers
                 Session["CustomerID"] = user.CustomerID;
                 Session["Username"] = user.Username;
                 Session["CustomerName"] = user.CustomerName;
+                Session["Phone"] = user.Phone;
+                Session["Email"] = user.Email;
+                Session["Address"] = user.Address;
+                //số lượng giỏ hàng
+                string accountId = Session["CustomerID"].ToString();
+
+                var cart = await _context.Carts.Include("CartDetails")
+                                    .FirstOrDefaultAsync(c => c.CustomerID == accountId);
+                if (cart == null || cart.CartDetails == null || !cart.CartDetails.Any())
+                {
+                    Session["SoluongGio"] = 0;
+                }
+                else
+                {
+                    int totalQuantity = cart.CartDetails.Count();
+                    Session["SoluongGio"] = totalQuantity;
+                }
 
                 TempData["success"] = "Đăng nhập thành công!";
                 return RedirectToAction("Index", "Home");
             }
 
             ModelState.AddModelError("", "Tên tài khoản hoặc mật khẩu không đúng.");
+            TempData["err"] = "Đăng nhập thất bại!";
             return View(model);
         }
+
 
         // Hàm đăng kí
         [HttpPost]
@@ -102,7 +120,7 @@ namespace TeaShop.Controllers
 
             var ListInforCustomer = new CustomerModel
             {
-                CustomerID = GenerateCustomerID(),
+                CustomerID = GenerateCustomerIDForUser(),
                 CustomerName = customerModel.CustomerName,
                 Email = customerModel.Email,
                 Phone = customerModel.Phone,
@@ -119,19 +137,42 @@ namespace TeaShop.Controllers
         }
 
         // Hàm sinh mã tự động
-        private string GenerateCustomerID()
+        private string GenerateCustomerIDForUser()
         {
-            var latestCustomer = _context.Customers.OrderByDescending(c => c.CustomerID).FirstOrDefault();
-            if (latestCustomer == null)
+            // Lọc các khách hàng có mã bắt đầu bằng "KH"
+            var customersWithKH = _context.Customers
+                .Where(c => c.CustomerID.StartsWith("KH"))
+                .ToList();
+
+            // Nếu không có khách hàng nào với mã bắt đầu bằng "KH", đặt mã mới là "KH001"
+            if (!customersWithKH.Any())
             {
                 return "KH001";
             }
 
-            string latestId = latestCustomer.CustomerID;
-            int latestNumber = int.Parse(latestId.Substring(2));
-            int newNumber = latestNumber + 1;
+            // Lọc và chuyển đổi các mã hợp lệ thành số
+            var validNumbers = customersWithKH
+                .Select(c => c.CustomerID.Substring(2))
+                .Where(id => int.TryParse(id, out _))  // Lọc chỉ giữ các id có thể chuyển đổi thành số
+                .Select(int.Parse)  // Chuyển đổi thành số
+                .ToList();
 
+            // Nếu không có số hợp lệ, bắt đầu từ "KH001"
+            if (!validNumbers.Any())
+            {
+                return "KH001";
+            }
+
+            // Tìm mã lớn nhất hiện tại
+            int maxNumber = validNumbers.Max();
+
+            // Tạo mã mới với phần số tăng lên 1
+            int newNumber = maxNumber + 1;
             return "KH" + newNumber.ToString("D3");
         }
+
+
+
+
     }
 }

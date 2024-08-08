@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web.Mvc;
 using System.Web.Security;
 using TeaShop.Respository;
+using System.Runtime.InteropServices;
 
 namespace TeaShop.Controllers
 {
@@ -55,104 +56,7 @@ namespace TeaShop.Controllers
             }
         }
 
-        // Nước ép
-        //public ActionResult Juice()
-        //{
-        //    try
-        //    {
-        //        var products = _context.Products.Include(p => p.Category)
-        //                                         .Where(p => p.CategoryID == "CAT004")
-        //                                         .Take(6)
-        //                                         .ToList();
-
-        //        var model = new HomeViewModel
-        //        {
-        //            ProductModels = products
-        //        };
-
-        //        return View(model);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Log the exception (you can use a logging framework or log to a file/database)
-        //        ViewBag.ErrorMessage = "An error occurred while fetching juice products.";
-        //        return View("Error");
-        //    }
-        //}
-
-        // Trà sữa
-        //public ActionResult MilkTea()
-        //{
-        //    try
-        //    {
-        //        var products = _context.Products.Include(p => p.Category)
-        //                                         .Where(p => p.CategoryID == "CAT002")
-        //                                         .Take(6)
-        //                                         .ToList();
-
-        //        var model = new HomeViewModel
-        //        {
-        //            ProductModels = products
-        //        };
-
-        //        return View(model);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Log the exception
-        //        ViewBag.ErrorMessage = "An error occurred while fetching milk tea products.";
-        //        return View("Error");
-        //    }
-        //}
-
-        // Bánh Ngọt
-        //public ActionResult Cake()
-        //{
-        //    try
-        //    {
-        //        var products = _context.Products.Include(p => p.Category)
-        //                                         .Where(p => p.CategoryID == "CAT001")
-        //                                         .Take(6)
-        //                                         .ToList();
-
-        //        var model = new HomeViewModel
-        //        {
-        //            ProductModels = products
-        //        };
-
-        //        return View(model);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Log the exception
-        //        ViewBag.ErrorMessage = "An error occurred while fetching cake products.";
-        //        return View("Error");
-        //    }
-        //}
-
-        //public ActionResult Cafe()
-        //{
-        //    try
-        //    {
-        //        var products = _context.Products.Include(p => p.Category)
-        //                                         .Where(p => p.CategoryID == "CAT003")
-        //                                         .Take(6)
-        //                                         .ToList();
-
-        //        var model = new HomeViewModel
-        //        {
-        //            ProductModels = products
-        //        };
-
-        //        return View(model);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Log the exception
-        //        ViewBag.ErrorMessage = "An error occurred while fetching cafe products.";
-        //        return View("Error");
-        //    }
-        //}
+       
 
         [HttpPost]
         public ActionResult OrderCafe(OrderDetailModel orderItem)
@@ -265,7 +169,28 @@ namespace TeaShop.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+        public ActionResult SearchProduct(string productName)
+        {
+            try
+            {
+                var searchproducts = _context.Products
+                                                 .Where(p => p.ProductName.Contains(productName))
+                                                 .ToList();
 
+                var model = new HomeViewModel
+                {
+                    ProductModels = searchproducts
+                };
+
+                return View("Product",model);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                ViewBag.ErrorMessage = "An error occurred while fetching products.";
+                return View("Error");
+            }
+        }
         public ActionResult Product(string categoryId)
         {
             try

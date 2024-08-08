@@ -1,5 +1,4 @@
 ﻿@model IEnumerable<TeaShop.Models.CartModel>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -36,48 +35,83 @@
                 <div class="modal-body">
                     @if (Session["CustomerID"] != null)
                     {
-                        <form>
-                            <table class="table text-center">
-                                <tbody>
-                                    @foreach (var cart in Model)
-                                    {
-                                        foreach (var detail in cart.CartDetails)
+                        using (Html.BeginForm("Index", "OrderDetail", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            if (Model.Any(cart => cart.CartDetails.Any()))
+                            {
+                                <table class="table text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>Chọn</th>
+                                            <th>Hình Ảnh</th>
+                                            <th>Tên Sản Phẩm</th>
+                                            <th>Kích Cỡ</th>
+                                            <th>Số Lượng</th>
+                                            <th>Giá</th>
+                                            <th>Hành Động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var cart in Model)
                                         {
-                                            <tr id="cartDetail_@detail.CartDetailID">
-                                                <td>
-                                                    @{
-                                                        string relativeImagePath = "";
-                                                        string imagePath = Path.Combine(detail.Product.ImageURL);
+                                            foreach (var detail in cart.CartDetails)
+                                            {
+                                                <tr id="cartDetail_@detail.CartDetailID">
+                                                    <td>
+                                                        <input type="checkbox" name="selectedItems" value="@detail.CartDetailID"/>
+                                                    </td>
+                                                    <td>
+                                                        @{
+                                                            var imageUrl = detail.Product.ImageURL;
+                                                            var imagePath = Path.Combine(Server.MapPath("~/Images"), Path.GetFileName(imageUrl));
+                                                            var otherImagePath = Path.Combine(Server.MapPath("~/Images/Others"), Path.GetFileName(imageUrl));
+                                                            var relativeImagePath = "";
 
-                                                        relativeImagePath = "~/Images/" + Path.GetFileName(imagePath).Replace("\\", "/");
-
-                                                    }
-                                                    <img src="@Url.Content(relativeImagePath)" alt="Product Image" style="max-width:100px;max-height:100px;" />
-
-                                                </td>
-                                                <td>@Html.DisplayFor(modelItem => detail.Product.ProductName)</td>
-                                                <td>@Html.DisplayFor(modelItem => detail.Size)</td>
-                                                <td>@Html.DisplayFor(modelItem => detail.Quantity)</td>
-                                                <td>@string.Format("{0:N0}đ", detail.Price)</td>
-                                                <td>@string.Format("{0:N0}đ", detail.Quantity * detail.Price)</td>
-                                                <td>
-                                                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#editModal_@detail.CartDetailID">Cập nhật</button>
-                                                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#deleteModal_@detail.CartDetailID">Loại bỏ</button>
-                                                </td>
-                                            </tr>
+                                                            if (File.Exists(imagePath))
+                                                            {
+                                                                relativeImagePath = Url.Content("~/Images/" + Path.GetFileName(imageUrl));
+                                                            }
+                                                            else if (File.Exists(otherImagePath))
+                                                            {
+                                                                relativeImagePath = Url.Content("~/Images/Others/" + Path.GetFileName(imageUrl));
+                                                            }
+                                                            else
+                                                            {
+                                                                relativeImagePath = Url.Content("~/Images/default.png"); // Default image if none is found
+                                                            }
+                                                        }
+                                                        <img src="@relativeImagePath" alt="Product Image" style="max-width:100px;max-height:100px;"/>
+                                                      
+                                                    </td>
+                                                    <td>@Html.DisplayFor(modelItem => detail.Product.ProductName)</td>
+                                                    <td>@Html.DisplayFor(modelItem => detail.Size)</td>
+                                                    <td>@Html.DisplayFor(modelItem => detail.Quantity)</td>
+                                                    <td>@string.Format("{0:N0}đ", detail.Price)</td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#editModal_@detail.CartDetailID">Cập nhật</button>
+                                                        <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#deleteModal_@detail.CartDetailID">Loại bỏ</button>
+                                                    </td>
+                                                </tr>
+                                            }
                                         }
-                                    }
-                                </tbody>
-                            </table>
-                            <div id="cartSummary">
-                                <p>Tổng tiền: @string.Format("{0:N0}đ", Model.Sum(cart => cart.CartDetails.Sum(cd => cd.Price * cd.Quantity)))</p>
-                            </div>
-                        </form>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Quay lại</button>
-                            <a href="@Url.Action("CreatePayment", "Payment")" class="btn btn-success">Thanh Toán</a>
-                        </div>
+                                    </tbody>
+                                </table>
+                                <div id="cartSummary">
+                                    <p>Tổng tiền: @string.Format("{0:N0}đ", Model.Sum(cart => cart.CartDetails.Sum(cd => cd.Price * cd.Quantity)))</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Quay lại</button>
+                                    <button type="submit" class="btn btn-success">Thanh Toán</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center">
+                                    <p>Giỏ hàng của bạn đang trống.</p>
+                                </div>
+                            }
+                        }
                     }
                     else
                     {
@@ -88,118 +122,139 @@
                         </div>
                     }
                 </div>
-            </div>
-        </div>
-    </div>
 
-    @foreach (var cart in Model)
-    {
-        foreach (var detail in cart.CartDetails)
-        {
-            <!-- Edit Modal -->
-            <div class="modal fade" id="editModal_@detail.CartDetailID" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="editModalLabel">Cập nhật sản phẩm</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            @using (Html.BeginForm("EditItem", "Cart", FormMethod.Post))
-                            {
-                                @Html.AntiForgeryToken()
-                                @Html.Hidden("CartDetailID", detail.CartDetailID)
-                                @Html.Hidden("Price", detail.Price, new { id = "pricePerUnit_" + detail.CartDetailID })
-                                <div class="form-group">
-                                    <label for="Size">Kích cỡ:</label>
-                                    <div id="Size">
-                                        <label><input type="radio" name="Size" id="size" value="Hot" @(detail.Size == "Hot" ? "checked" : "")> Hot</label>
-                                        <label><input type="radio" name="Size" id="size" value="Ice regular size" @(detail.Size == "Ice regular size" ? "checked" : "")> Ice regular size</label>
-                                        <label><input type="radio" name="Size" id="size" value="Big size ice" @(detail.Size == "Big size ice" ? "checked" : "")> Big size ice</label>
+                @foreach (var cart in Model)
+                {
+                    foreach (var detail in cart.CartDetails)
+                    {
+                        <!-- Edit Modal -->
+                        <div class="modal fade" id="editModal_@detail.CartDetailID" tabindex="-1" role="dialog" aria-labelledby="editModalLabel_@detail.CartDetailID" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editModalLabel_@detail.CartDetailID">Cập nhật sản phẩm</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        @using (Html.BeginForm("EditItem", "Cart", FormMethod.Post, new { id = "editItemForm_" + detail.CartDetailID }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            @Html.Hidden("CartDetailID", detail.CartDetailID)
+                                            @Html.Hidden("Price", detail.Price, new { id = "pricePerUnit_" + detail.CartDetailID })
+
+                                            <div class="form-group">
+                                                <label for="Size_@detail.CartDetailID">Kích cỡ:</label>
+                                                <div id="Size_@detail.CartDetailID">
+                                                    <label><input type="radio" name="Size" id="sizeHot_@detail.CartDetailID" value="Hot" @(detail.Size == "Hot" ? "checked" : "")> Hot</label>
+                                                    <label><input type="radio" name="Size" id="sizeIceRegular_@detail.CartDetailID" value="Ice regular size" @(detail.Size == "Ice regular size" ? "checked" : "")> Ice regular size</label>
+                                                    <label><input type="radio" name="Size" id="sizeBigIce_@detail.CartDetailID" value="Big size ice" @(detail.Size == "Big size ice" ? "checked" : "")> Big size ice</label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Quantity_@detail.CartDetailID">Số lượng:</label>
+                                                <input type="number" class="form-control" name="Quantity" value="@detail.Quantity" min="1" id="quantityInput_@detail.CartDetailID" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="TotalPrice_@detail.CartDetailID">Tổng tiền:</label>
+                                                <input type="text" class="form-control" name="TotalPrice" id="totalPrice_@detail.CartDetailID" value="@string.Format("{0:N0}đ", detail.Quantity * detail.Price)" readonly="readonly" />
+                                            </div>
+                                            <button type="submit" class="btn btn-success">Cập nhật</button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                        }
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="Quantity">Số lượng:</label>
-                                    <input type="number" class="form-control" name="Quantity" value="@detail.Quantity" min="1" id="quantityInput_@detail.CartDetailID" />
-                                </div>
-                                <div class="form-group">
-                                    <label for="TotalPrice">Tổng tiền:</label>
-                                    <input type="text" class="form-control" name="TotalPrice" id="totalPrice_@detail.CartDetailID" value="@string.Format("{0:N0}đ", detail.Quantity * detail.Price)" readonly="readonly" />
-                                </div>
-                                <button type="submit" class="btn btn-success">Cập nhật</button>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                            }
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Delete Modal -->
-            <div class="modal fade" id="deleteModal_@detail.CartDetailID" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="deleteModalLabel">Xác nhận xóa</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng không?</p>
-                        </div>
-                        <div class="modal-footer">
-                            @using (Html.BeginForm("DeleteConfirmed", "Cart", FormMethod.Post))
-                            {
-                                @Html.AntiForgeryToken()
-                                @Html.Hidden("CartDetailID", detail.CartDetailID)
-                                <button type="submit" class="btn btn-danger">Xóa</button>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-    }
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            function calculateTotal() {
-                var total = 0;
-                $('tr[id^="cartDetail_"]').each(function () {
-                    var cartDetailID = $(this).attr('id').split('_')[1];
-                    var quantity = parseInt($('#quantityInput_' + cartDetailID).val());
-                    var pricePerUnit = parseFloat($('#pricePerUnit_' + cartDetailID).val());
-                    if (!isNaN(quantity) && !isNaN(pricePerUnit)) {
-                        total += quantity * pricePerUnit;
+
+
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="deleteModal_@detail.CartDetailID" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel_@detail.CartDetailID" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteModalLabel_@detail.CartDetailID">Xác nhận xóa</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng không?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        @using (Html.BeginForm("DeleteConfirmed", "Cart", FormMethod.Post))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            @Html.Hidden("CartDetailID", detail.CartDetailID)
+                                            <button type="submit" class="btn btn-danger">Xóa</button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
                     }
-                });
-                $('#cartSummary p').text('Tổng tiền: ' + total.toLocaleString('vi-VN') + 'đ');
-            }
 
-            $('input[type="number"]').on('change', function () {
-                var cartDetailID = $(this).attr('id').split('_')[1];
-                var quantity = parseInt($(this).val());
-                var pricePerUnit = parseFloat($('#pricePerUnit_' + cartDetailID).val());
-                if (!isNaN(quantity) && !isNaN(pricePerUnit)) {
-                    $('#totalPrice_' + cartDetailID).val((quantity * pricePerUnit).toLocaleString('vi-VN') + 'đ');
-                    calculateTotal();
                 }
-            });
 
-            $('input[name="Size"]').on('change', function () {
-                var cartDetailID = $(this).closest('tr').attr('id').split('_')[1];
-                var pricePerUnit = parseFloat($('#pricePerUnit_' + cartDetailID).val());
-                var quantity = parseInt($('#quantityInput_' + cartDetailID).val());
-                if (!isNaN(quantity) && !isNaN(pricePerUnit)) {
-                    $('#totalPrice_' + cartDetailID).val((quantity * pricePerUnit).toLocaleString('vi-VN') + 'đ');
-                    calculateTotal();
-                }
-            });
-        });
-    </script>
+
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+                <script>
+
+
+
+                    $(document).ready(function () {
+                        function calculateTotal() {
+                            var total = 0;
+                            $('tr[id^="cartDetail_"]').each(function () {
+                                var cartDetailID = $(this).attr('id').split('_')[1];
+                                var quantity = parseInt($('#quantityInput_' + cartDetailID).val());
+                                var pricePerUnit = parseFloat($('#pricePerUnit_' + cartDetailID).val());
+                                if (!isNaN(quantity) && !isNaN(pricePerUnit)) {
+                                    total += quantity * pricePerUnit;
+                                }
+                            });
+                            $('#cartSummary p').text('Tổng tiền: ' + total.toLocaleString('vi-VN') + 'đ');
+                        }
+
+                        $('input[type="number"]').on('change', function () {
+                            var cartDetailID = $(this).attr('id').split('_')[1];
+                            var quantity = parseInt($(this).val());
+                            var pricePerUnit = parseFloat($('#pricePerUnit_' + cartDetailID).val());
+                            if (!isNaN(quantity) && !isNaN(pricePerUnit)) {
+                                $('#totalPrice_' + cartDetailID).val((quantity * pricePerUnit).toLocaleString('vi-VN') + 'đ');
+                                calculateTotal();
+                            }
+                        });
+
+                        $('input[name="Size"]').on('change', function () {
+                            var cartDetailID = $(this).closest('tr').attr('id').split('_')[1];
+                            var pricePerUnit = parseFloat($('#pricePerUnit_' + cartDetailID).val());
+                            var quantity = parseInt($('#quantityInput_' + cartDetailID).val());
+                            if (!isNaN(quantity) && !isNaN(pricePerUnit)) {
+                                $('#totalPrice_' + cartDetailID).val((quantity * pricePerUnit).toLocaleString('vi-VN') + 'đ');
+                                calculateTotal();
+                            }
+                        });
+                    });
+// Update total price dynamically
+$(document).on('input', '[id^=quantityInput_]', function () {
+    var cartDetailID = $(this).attr('id').split('_')[1];
+    var price = parseFloat($('#pricePerUnit_' + cartDetailID).val());
+    var quantity = parseInt($(this).val());
+    var totalPrice = price * quantity;
+    $('#totalPrice_' + cartDetailID).val(totalPrice.toLocaleString('vi-VN') + 'đ');
+});
+
+                </script>
 </body>
 </html>

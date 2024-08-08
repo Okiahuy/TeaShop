@@ -51,7 +51,7 @@ namespace TeaShop.Areas.Admin.Controllers
                     model.CategoryID = GenerateCategoryID();
                     ViewBag.NewCategoryID = model.CategoryID ?? GenerateCategoryID();
                 }
-
+                TempData["success"] = "Thêm loại thành công!";
                 db.Categories.Add(model);
                 db.SaveChanges();
 
@@ -109,7 +109,7 @@ namespace TeaShop.Areas.Admin.Controllers
 
                 category.CategoryName = model.CategoryName;
                 category.Description = model.Description;
-
+                TempData["success"] = "Sửa loại thành công!";
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -144,7 +144,7 @@ namespace TeaShop.Areas.Admin.Controllers
             {
                 return HttpNotFound();
             }
-
+            TempData["success"] = "Xóa loại thành công!";
             db.Categories.Remove(category);
             db.SaveChanges();
             return RedirectToAction("Index");

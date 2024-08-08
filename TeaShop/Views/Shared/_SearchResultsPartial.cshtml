@@ -1,0 +1,11 @@
+﻿
+@model IEnumerable<TeaShop.Models.ProductModel> 
+
+@foreach (var product in Model)
+{
+    <div class="search-result-item">
+        <img src="@Url.Content(product.ImageURL)" alt="@product.ProductName" width="50" height="50">
+        <span>@product.ProductName</span>
+    </div>
+}
+

@@ -15,6 +15,8 @@ namespace TeaShop.ViewModel
         public DateTime OrderDate { get; set; }
         public decimal TotalAmount { get; set; }
         public string OrderStatus { get; set; }
+        public string CancellationReason { get; set; }
+        public bool IsLatestOrder { get; set; }
         public List<OrderItemViewModel> OrderItems { get; set; }
     }
 }

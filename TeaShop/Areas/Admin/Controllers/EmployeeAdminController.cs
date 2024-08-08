@@ -44,16 +44,18 @@ namespace TeaShop.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                if (age < 18)
+                /*if (age < 18)
                 {
                     // Thêm thông báo lỗi vào ModelState
                     TempData["err"] = "Nhân viên phải từ đủ 18 tuổi trở lên";
-                }
+                }*/
 
                 if (ModelState.IsValid)
                 {
+                    
                     db.Employees.Add(employee);
                     db.SaveChanges();
+                    TempData["success"] = "Thêm nhân vien thành công";
                     return RedirectToAction("Index", "EmployeeAdmin");
                 }
             }

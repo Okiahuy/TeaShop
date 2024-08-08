@@ -1,0 +1,113 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutPage.cshtml";
+}
+
+
+@model TeaShop.ViewModel.StatisticsViewModel
+
+<h2>Thống kê doanh thu</h2>
+
+<div class="stats-container">
+    <div class="stat-item bg-secondary">
+        <h3>Tổng số tiền nguyên liệu</h3>
+        <p>@string.Format("{0:N0}đ", Model.TotalCost)</p>
+    </div>
+    <div class="stat-item text-bg-danger">
+        <h3>Tổng số tiền bán được</h3>
+        <p>@string.Format("{0:N0}đ", Model.TotalRevenue)</p>
+    </div>
+    <div class="stat-item bg-success">
+        <h3>Tổng doanh thu</h3>
+        <p>@string.Format("{0:N0}đ", Model.NetRevenue)</p>
+    </div>
+    <div class="stat-item bg-warning">
+        <h3>Tổng số khách hàng</h3>
+        <p>@Model.TotalCustomers</p>
+    </div>
+    <div class="stat-item">
+        <h3>Số khách hàng tại quầy</h3>
+        <p>@Model.InStoreCustomers</p>
+    </div>
+    <div class="stat-item bg-gradient">
+        <h3>Số khách hàng online</h3>
+        <p>@Model.OnlineCustomers</p>
+    </div>
+</div>
+
+<canvas id="revenueChart" width="400" height="200"></canvas>
+
+@section Styles {
+    <style>
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-item {
+            flex: 1 1 30%;
+            margin: 10px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+            .stat-item:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            }
+
+            .stat-item h3 {
+                margin-bottom: 10px;
+                color: #333;
+            }
+
+            .stat-item p {
+                font-size: 24px;
+                color: #666;
+            }
+
+        canvas {
+            margin-top: 20px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var ctx = document.getElementById('revenueChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Nguyên liệu', 'Doanh thu'],
+                    datasets: [{
+                        label: 'Thống kê',
+                        data: [@Model.TotalCost, @Model.TotalRevenue],
+                        backgroundColor: ['#FF6384', '#36A2EB']
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}
+
+
